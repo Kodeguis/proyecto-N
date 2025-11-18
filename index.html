@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Nuestro espacio especial - Un lugar lleno de amor y momentos únicos para compartir juntos" />
+    <meta name="keywords" content="amor, pareja, mensajes, cupones, trivia, momentos especiales" />
+    <meta name="author" content="Tu persona especial" />
+    <meta property="og:title" content="Nuestro Espacio Especial 💖" />
+    <meta property="og:description" content="Un lugar lleno de amor y momentos únicos para compartir juntos" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ff6699" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Cumpleaños 2025" />
+    <title>Cumpleaños 2025 💖</title>
+    <script type="module">
+      if (import.meta.hot?.on) {
+        import.meta.hot.on('vite:error', (error) => {
+          if (error.err) {
+            console.error(
+              [error.err.message, error.err.frame].filter(Boolean).join('\n'),
+            )
+          }
+        })
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regalo para mi amor 💖</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4, #ffe0f0, #ffd6e8);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart-float {
+      position: absolute;
+      font-size: 30px;
+      opacity: 0;
+      animation: floatUp 8s ease-in infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .panda-float {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: floatSide 12s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatSide {
+      0%, 100% { 
+        transform: translateX(0) translateY(0) rotate(0deg);
+      }
+      25% {
+        transform: translateX(30px) translateY(-20px) rotate(5deg);
+      }
+      50% {
+        transform: translateX(0) translateY(-40px) rotate(-5deg);
+      }
+      75% {
+        transform: translateX(-30px) translateY(-20px) rotate(5deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .panda-float {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .panda-float {
+        width: 45px;
+        height: 45px;
+      }
+    }
+
+    .panel {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 100%;
+      opacity: 0;
+      transition: all 1s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .panel.active {
+      left: 0;
+      opacity: 1;
+    }
+
+    .panel.slide-out-left {
+      left: -100%;
+      opacity: 0;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #ff6699;
+      text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px;
+      animation: titlePulse 2s ease-in-out infinite;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+
+    p {
+      color: #555;
+      font-size: 1.2em;
+      text-align: center;
+      max-width: 600px;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      p {
+        font-size: 1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      p {
+        font-size: 0.9em;
+      }
+    }
+
+    button {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      border: none;
+      color: #fff;
+      font-size: 1.2em;
+      padding: 12px 24px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.3);
+    }
+
+    @media (max-width: 480px) {
+      button {
+        font-size: 1em;
+        padding: 10px 20px;
+      }
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #ff85b8, #ffb6d9);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.4);
+    }
+
+    .envelope {
+      position: relative;
+      width: 280px;
+      height: 180px;
+      background: #ff9ecb;
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(255, 102, 153, 0.3);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    @media (max-width: 480px) {
+      .envelope {
+        width: 200px;
+        height: 130px;
+      }
+    }
+
+    .envelope:hover {
+      transform: scale(1.1) rotate(2deg);
+    }
+
+    .envelope:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffb6d9, #ffa8c7);
+      clip-path: polygon(0 0, 50% 50%, 100% 0);
+      transition: clip-path 0.5s;
+    }
+
+    .envelope:hover:before {
+      clip-path: polygon(0 0, 50% 60%, 100% 0);
+    }
+
+    .letter-modal, .photo-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 15px;
+    }
+
+    .photo-modal {
+      z-index: 150;
+      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.85);
+      padding: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .letter-modal, .photo-modal {
+        padding: 10px;
+      }
+    }
+
+    .letter-content {
+      background: linear-gradient(135deg, #fff, #fff5f8);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(255, 102, 153, 0.4);
+      animation: fadeIn 0.6s ease forwards;
+      text-align: center;
+      position: relative;
+      border: 3px solid #ffb6d9;
+      max-height: 80vh;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .letter-content {
+        padding: 25px 20px;
+        width: 90%;
+        max-height: 75vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .letter-content {
+        padding: 50px 18px 20px;
+        width: calc(100% - 20px);
+        max-width: calc(100vw - 20px);
+        border-radius: 12px;
+        max-height: 75vh;
+        margin: 0 auto;
+      }
+      
+      .letter-content h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        padding: 0 5px;
+      }
+      
+      .letter-content p {
+        font-size: 0.85em;
+        text-align: justify;
+      }
+    }
+
+    .photo-content {
+      background: #fff;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 85vh;
+      padding: 20px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      animation: zoomIn 0.4s ease forwards;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .photo-content {
+        width: 90%;
+        padding: 50px 12px 12px;
+        max-height: 80vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .photo-content {
+        padding: 45px 10px 12px;
+        border-radius: 12px;
+        width: calc(100% - 20px);
+        max-width: calc(100vw - 20px);
+        max-height: 78vh;
+        margin: 0 auto;
+      }
+    }
+
+    .photo-content img {
+      max-width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .photo-content img {
+        max-height: 50vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .photo-content img {
+        max-height: 45vh;
+        border-radius: 8px;
+      }
+    }
+
+    .photo-caption {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #ff6699;
+      text-align: center;
+      font-weight: 500;
+      padding: 0 15px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .photo-caption {
+        font-size: 0.95em;
+        margin-top: 12px;
+        padding: 0 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .photo-caption {
+        font-size: 0.85em;
+        margin-top: 10px;
+        padding: 0 8px;
+        line-height: 1.5;
+      }
+    }
+
+    .close-letter, .close-photo {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: #ff6699;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #fff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      z-index: 10;
+    }
+
+    @media (max-width: 480px) {
+      .close-letter, .close-photo {
+        top: 10px;
+        left: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 1.2em;
+      }
+    }
+
+    .close-letter:hover, .close-photo:hover {
+      background: #ff85b8;
+      transform: rotate(90deg);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1000px;
+      width: 90%;
+      margin-top: 20px;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+
+    @media (max-width: 768px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        max-height: 65vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+        width: 95%;
+        max-height: 70vh;
+      }
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) rotate(2deg);
+      box-shadow: 0 10px 25px rgba(255, 102, 153, 0.3);
+    }
+
+    .card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .card img {
+        height: 200px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card img {
+        height: 150px;
+        border-radius: 12px;
+      }
+    }
+
+    .footer-message {
+      text-align: center;
+      font-size: 1.3em;
+      color: #ff6699;
+      margin-top: 40px;
+      max-width: 600px;
+      text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+      padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+      .footer-message {
+        font-size: 1.1em;
+        margin-top: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .footer-message {
+        font-size: 0.95em;
+        margin-top: 20px;
+      }
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5em;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 0.9em;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .menu-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.5);
+    }
+
+    @media (max-width: 480px) {
+      .back-button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3em;
+        top: 15px;
+        left: 15px;
+      }
+
+      .menu-button {
+        padding: 10px 15px;
+        font-size: 0.8em;
+        top: 15px;
+        right: 15px;
+      }
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, #ff85b8, #ffb6d9);
+    }
+
+    .corner-heart {
+      position: absolute;
+      font-size: 60px;
+      opacity: 0.6;
+      animation: pulse 2s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    @media (max-width: 768px) {
+      .corner-heart {
+        font-size: 45px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .corner-heart {
+        font-size: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-hearts" id="floatingHearts"></div>
+
+  <div class="panda-float" style="top: 10%; left: 5%;">🐼</div>
+  <div class="panda-float" style="top: 70%; right: 8%; animation-delay: 2s;">🐼</div>
+  <div class="panda-float" style="top: 40%; right: 15%; animation-delay: 4s;">🐼</div>
+
+  <section id="panel1" class="panel active">
+    <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+    
+    <div class="corner-heart" style="top: 5%; left: 5%;">💖</div>
+    <div class="corner-heart" style="top: 5%; right: 5%; animation-delay: 0.5s;">💗</div>
+    <div class="corner-heart" style="bottom: 10%; left: 10%; animation-delay: 1s;">💕</div>
+    <div class="corner-heart" style="bottom: 10%; right: 10%; animation-delay: 1.5s;">💓</div>
+    
+    <h1>¡Feliz cumpleaños, mi amor! 💖</h1>
+    <p>Este regalo es para ti, con todo mi corazón. Espero que te guste tanto como yo disfruto cada momento a tu lado.</p>
+    <button id="startBtn">Empezar ✨</button>
+  </section>
+
+  <section id="panel2" class="panel">
+    <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+    
+    <div class="corner-heart" style="top: 8%; left: 8%;">💝</div>
+    <div class="corner-heart" style="bottom: 15%; right: 12%; animation-delay: 0.7s;">💞</div>
+    
+    <h1>💌 Una carta para ti</h1>
+    <p style="margin-bottom: 20px;">Haz clic en el sobre para leer mi mensaje 💕</p>
+    <div class="envelope" id="envelope">
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3em;">💌</div>
+    </div>
+
+    <div class="letter-modal" id="letterModal">
+      <div class="letter-content">
+        <button class="close-letter" id="closeLetter">←</button>
+        <h2 style="margin-top: 10px;">De mí para ti 💖</h2>
+        <p style="margin-top: 15px; color: #666; line-height: 1.8;">
+          No sé por dónde empezar, pero quiero que sepas que te quiero muchísimo.
+          A veces puedo ser algo problemático, celoso o tener mis reacciones raras, pero estoy comprometido con esto, contigo.
+          Estoy aprendiendo, intentando hacerlo mejor cada día, porque realmente quiero ser una buena pareja para ti.<br><br>
+
+          Me hace muy feliz verte crecer, ver cómo te va bien en tu carrera, y sentir ese orgullo enorme al saber que estás logrando tus cosas.
+          De verdad espero que tu futuro sea increíble, y ojalá pueda estar ahí contigo para verlo, apoyarte y cuidarte siempre.<br><br>
+
+          También quiero que sepas que tú me inspiras.
+          Me incitas a ser mejor persona, a superarme en todo, porque verte a ti me motiva a no quedarme atrás y a esforzarme más.
+          Eres una grandiosa mujer, y tenerte a mi lado me hace sentir afortunado.<br><br>
+
+          Estoy muy feliz de ser tu pareja, de poder compartir contigo, reír, hablar de todo y disfrutar esos momentos que solo tú haces tan especiales.<br><br>
+
+          Gracias por estar conmigo, por tu cariño y por dejarme estar cerca de ti.<br><br>
+
+          Te quiero mucho, y me hace feliz verte feliz. 💖
+        </p>
+      </div>
+    </div>
+
+    <button id="galleryBtn" style="display:none; margin-top: 20px;">Ver galería de recuerdos 📸</button>
+  </section>
+
+  <section id="panel3" class="panel">
+    <button class="back-button" id="backToPanel2">←</button>
+    <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+    
+    <div class="corner-heart" style="top: 60px; right: 8%;">💗</div>
+    
+    <h1>Nuestros recuerdos 💞</h1>
+    <div class="gallery">
+      <div class="card" data-photo="images/foto1.jpg" data-caption="Nuestro día de basket sintiendo esa sinergia y emoción de jugar a tu lado 💕">
+        <img src="images/foto1.jpg" alt="Recuerdo 1">
+      </div>
+      <div class="card" data-photo="images/foto2.jpg" data-caption="En cualquier lado y en cualquier solución mi mano y mis ganas me delatan jajaja 😄">
+        <img src="images/foto2.jpg" alt="Recuerdo 2">
+      </div>
+      <div class="card" data-photo="images/foto3.jpg" data-caption="Nuestro primer café juntos 😊">
+        <img src="images/foto3.jpg" alt="Recuerdo 3">
+      </div>
+      <div class="card" data-photo="images/foto4.jpg" data-caption="Momentos que atesoro en mi corazón y sé que ellas también 💖">
+        <img src="images/foto4.jpg" alt="Recuerdo 4">
+      </div>
+      <div class="card" data-photo="images/foto5.jpg" data-caption="Acompañándote en tus logros ✨">
+        <img src="images/foto5.jpg" alt="Recuerdo 5">
+      </div>
+      <div class="card" data-photo="images/foto6.jpg" data-caption="Hay un poco de boca en mi labial jajaja 💋">
+        <img src="images/foto6.jpg" alt="Recuerdo 6">
+      </div>
+      <div class="card" data-photo="images/foto7.jpg" data-caption="Simplemente nosotros 💑">
+        <img src="images/foto7.jpg" alt="Recuerdo 7">
+      </div>
+      <div class="card" data-photo="images/foto8.jpg" data-caption="Me divierto mucho a tu lado 😄">
+        <img src="images/foto8.jpg" alt="Recuerdo 8">
+      </div>
+      <div class="card" data-photo="images/foto9.jpg" data-caption="Mi jugadora favorita 💝">
+        <img src="images/foto9.jpg" alt="Recuerdo 9">
+      </div>
+      <div class="card" data-photo="images/foto10.jpg" data-caption="Mi persona favorita 🥰">
+        <img src="images/foto10.jpg" alt="Recuerdo 10">
+      </div>
+      <div class="card" data-photo="images/foto11.jpg" data-caption="Quizá no lo digo mucho pero me encantan tus ojos 💖">
+        <img src="images/foto11.jpg" alt="Recuerdo 11">
+      </div>
+      <div class="card" data-photo="images/foto12.jpg" data-caption="Marcado de por vida 💪">
+        <img src="images/foto12.jpg" alt="Recuerdo 12">
+      </div>
+      <div class="card" data-photo="images/foto13.jpg" data-caption="Por muchos más momentos así 💞">
+        <img src="images/foto13.jpg" alt="Recuerdo 13">
+      </div>
+    </div>
+
+    <div class="footer-message">
+      Gracias por estar en mi vida y crecer juntos.<br>Te quiero con todo mi corazón 💖🐼
+    </div>
+  </section>
+
+  <div class="photo-modal" id="photoModal">
+    <div class="photo-content">
+      <button class="close-photo" id="closePhoto">✕</button>
+      <img id="modalImage" src="" alt="Foto grande">
+      <div class="photo-caption" id="photoCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    function createFloatingHearts() {
+      const container = document.getElementById('floatingHearts');
+      const hearts = ['💖', '💗', '💕', '💓', '💝', '💞', '❤️'];
+      
+      setInterval(() => {
+        const heart = document.createElement('div');
+        heart.className = 'heart-float';
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        heart.style.animationDelay = Math.random() * 2 + 's';
+        container.appendChild(heart);
+        
+        setTimeout(() => {
+          heart.remove();
+        }, 10000);
+      }, 800);
+    }
+
+    createFloatingHearts();
+
+    const panel1 = document.getElementById('panel1');
+    const panel2 = document.getElementById('panel2');
+    const panel3 = document.getElementById('panel3');
+    const startBtn = document.getElementById('startBtn');
+    const envelope = document.getElementById('envelope');
+    const letterModal = document.getElementById('letterModal');
+    const closeLetter = document.getElementById('closeLetter');
+    const galleryBtn = document.getElementById('galleryBtn');
+    const backToPanel2 = document.getElementById('backToPanel2');
+    
+    const photoModal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+    const photoCaption = document.getElementById('photoCaption');
+    const closePhoto = document.getElementById('closePhoto');
+    const galleryCards = document.querySelectorAll('.card');
+
+    startBtn.addEventListener('click', () => {
+      panel1.classList.remove('active');
+      panel1.classList.add('slide-out-left');
+      setTimeout(() => {
+        panel2.classList.add('active');
+      }, 500);
+    });
+
+    envelope.addEventListener('click', () => {
+      letterModal.style.display = 'flex';
+    });
+
+    closeLetter.addEventListener('click', () => {
+      letterModal.style.display = 'none';
+      galleryBtn.style.display = 'inline-block';
+    });
+
+    galleryBtn.addEventListener('click', () => {
+      panel2.classList.remove('active');
+      panel2.classList.add('slide-out-left');
+      setTimeout(() => {
+        panel3.classList.add('active');
+      }, 500);
+    });
+
+    backToPanel2.addEventListener('click', () => {
+      panel3.classList.remove('active');
+      panel3.classList.add('slide-out-left');
+      
+      setTimeout(() => {
+        panel2.classList.remove('slide-out-left');
+        panel2.classList.add('active');
+      }, 500);
+    });
+
+    galleryCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const photoSrc = card.getAttribute('data-photo');
+        const caption = card.getAttribute('data-caption');
+        
+        modalImage.src = photoSrc;
+        photoCaption.textContent = caption;
+        photoModal.style.display = 'flex';
+      });
+    });
+
+    closePhoto.addEventListener('click', () => {
+      photoModal.style.display = 'none';
+    });
+
+    photoModal.addEventListener('click', (e) => {
+      if (e.target === photoModal) {
+        photoModal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

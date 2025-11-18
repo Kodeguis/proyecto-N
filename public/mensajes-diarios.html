@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mensajes para ti 💌</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4, #ffe0f0, #ffd6e8);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 0.9em;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .menu-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.5);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 80px auto 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff6699;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.1em;
+      margin-bottom: 40px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .day-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.2);
+      position: relative;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .day-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 102, 153, 0.3);
+    }
+
+    .day-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .day-card.locked::after {
+      content: "🔒";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2em;
+    }
+
+    .day-card.active {
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .day-card.opened {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+    }
+
+    .day-number {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .day-label {
+      font-size: 0.8em;
+      opacity: 0.8;
+    }
+
+    .day-icon {
+      font-size: 1.5em;
+      margin-top: 5px;
+    }
+
+    .message-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .message-content {
+      background: linear-gradient(135deg, #fff, #fff5f8);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: zoomIn 0.4s ease;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #ff6699;
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .close-modal:hover {
+      background: #ff3366;
+      transform: rotate(90deg);
+    }
+
+    .message-date {
+      color: #ff6699;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .message-title {
+      font-size: 2em;
+      color: #ff6699;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .message-text {
+      font-size: 1.1em;
+      color: #555;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .message-emoji {
+      font-size: 3em;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      .calendar-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+      }
+
+      .day-card {
+        padding: 15px;
+        min-height: 100px;
+      }
+
+      .day-number {
+        font-size: 1.5em;
+      }
+
+      .message-content {
+        padding: 30px 20px;
+      }
+
+      .menu-button {
+        padding: 10px 15px;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+
+  <div class="container">
+    <h1>💌 Mensajes para ti</h1>
+    <p class="subtitle">Un mensaje especial cada día del mes 💕</p>
+
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <div class="message-modal" id="messageModal">
+    <div class="message-content">
+      <button class="close-modal" id="closeModal">✕</button>
+      <div class="message-date" id="messageDate"></div>
+      <div class="message-emoji" id="messageEmoji"></div>
+      <h2 class="message-title" id="messageTitle"></h2>
+      <p class="message-text" id="messageText"></p>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ CONFIGURA TUS MENSAJES AQUÍ
+    const messages = {
+      1: {
+        emoji: "💖",
+        title: "Día 1",
+        text: "Buenos días mi amor, espero que hoy sea un día increíble para ti. Recuerda que siempre estoy pensando en ti."
+      },
+      2: {
+        emoji: "🌟",
+        title: "Día 2",
+        text: "Eres la estrella más brillante de mi vida. Gracias por iluminar cada uno de mis días."
+      },
+      3: {
+        emoji: "☕",
+        title: "Día 3",
+        text: "Como un café en la mañana, tú me das la energía para enfrentar el día. Te amo."
+      },
+      4: {
+        emoji: "🌈",
+        title: "Día 4",
+        text: "Después de cada tormenta viene un arcoíris, y tú eres mi arcoíris después de cada día difícil."
+      },
+      5: {
+        emoji: "💕",
+        title: "Día 5",
+        text: "5 letras, 2 vocales, 3 consonantes y 2 tontos: TÚ Y YO 💕"
+      },
+      6: {
+        emoji: "🎵",
+        title: "Día 6",
+        text: "Si mi vida fuera una canción, tú serías la melodía más hermosa."
+      },
+      7: {
+        emoji: "🌙",
+        title: "Día 7",
+        text: "Buenas noches mi amor. Que la luna te cuide mientras duermes y sueñes conmigo."
+      },
+      8: {
+        emoji: "🦋",
+        title: "Día 8",
+        text: "Eres como una mariposa, hermosa y libre. Y yo soy afortunado de que hayas elegido estar conmigo."
+      },
+      9: {
+        emoji: "🎁",
+        title: "Día 9",
+        text: "Cada día contigo es un regalo. Gracias por ser mi presente favorito."
+      },
+      10: {
+        emoji: "🌺",
+        title: "Día 10",
+        text: "Como una flor que florece, nuestro amor crece más hermoso cada día."
+      },
+      11: {
+        emoji: "⭐",
+        title: "Día 11",
+        text: "11:11 - Pido un deseo: estar contigo para siempre."
+      },
+      12: {
+        emoji: "🍕",
+        title: "Día 12",
+        text: "Tú y yo somos como pizza y queso: perfectos juntos."
+      },
+      13: {
+        emoji: "🌸",
+        title: "Día 13",
+        text: "No hay número de mala suerte cuando estoy contigo. Cada día es especial."
+      },
+      14: {
+        emoji: "💑",
+        title: "Día 14",
+        text: "Tú y yo contra el mundo. Siempre juntos, siempre unidos."
+      },
+      15: {
+        emoji: "🎨",
+        title: "Día 15",
+        text: "Mi vida era en blanco y negro hasta que llegaste tú y la llenaste de colores."
+      },
+      16: {
+        emoji: "🔥",
+        title: "Día 16",
+        text: "Tú enciendes la llama de mi corazón cada vez que te veo."
+      },
+      17: {
+        emoji: "🎭",
+        title: "Día 17",
+        text: "Contigo no necesito actuar. Puedo ser yo mismo y eso es lo más hermoso."
+      },
+      18: {
+        emoji: "🏀",
+        title: "Día 18",
+        text: "Eres mi MVP, la jugadora más valiosa de mi corazón."
+      },
+      19: {
+        emoji: "🌻",
+        title: "Día 19",
+        text: "Como los girasoles siguen al sol, yo te sigo a ti."
+      },
+      20: {
+        emoji: "📚",
+        title: "Día 20",
+        text: "Tú eres mi historia favorita, la que nunca me canso de leer."
+      },
+      21: {
+        emoji: "🎪",
+        title: "Día 21",
+        text: "Contigo la vida es una fiesta todos los días."
+      },
+      22: {
+        emoji: "🍰",
+        title: "Día 22",
+        text: "Eres el dulce que necesita mi vida. Mi pedacito de cielo."
+      },
+      23: {
+        emoji: "🎸",
+        title: "Día 23",
+        text: "Tú haces que mi corazón toque la mejor melodía."
+      },
+      24: {
+        emoji: "🌅",
+        title: "Día 24",
+        text: "Cada amanecer contigo es una nueva oportunidad de amarte más."
+      },
+      25: {
+        emoji: "💝",
+        title: "Día 25",
+        text: "25 días de amor, y faltan muchos más por venir. Te amo infinito."
+      },
+      26: {
+        emoji: "🎯",
+        title: "Día 26",
+        text: "Tú eres mi objetivo, mi meta, mi propósito."
+      },
+      27: {
+        emoji: "🌠",
+        title: "Día 27",
+        text: "Eres mi estrella fugaz, mi deseo cumplido."
+      },
+      28: {
+        emoji: "🎀",
+        title: "Día 28",
+        text: "Envuelves mi vida como un hermoso regalo. Gracias por existir."
+      },
+      29: {
+        emoji: "🦄",
+        title: "Día 29",
+        text: "Eres única, mágica, especial. Mi unicornio en un mundo de caballos."
+      },
+      30: {
+        emoji: "👑",
+        title: "Día 30",
+        text: "Eres la reina de mi corazón. Siempre lo serás."
+      },
+      31: {
+        emoji: "💞",
+        title: "Día 31",
+        text: "Fin de mes pero nunca fin de nuestro amor. Te amo hoy y siempre."
+      }
+    };
+
+    const calendarGrid = document.getElementById('calendarGrid');
+    const messageModal = document.getElementById('messageModal');
+    const closeModal = document.getElementById('closeModal');
+    const messageDate = document.getElementById('messageDate');
+    const messageEmoji = document.getElementById('messageEmoji');
+    const messageTitle = document.getElementById('messageTitle');
+    const messageText = document.getElementById('messageText');
+
+    const today = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    // Obtener días abiertos del almacenamiento
+    let openedDays = JSON.parse(localStorage.getItem('openedDays') || '[]');
+
+    // Crear calendario
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayCard = document.createElement('div');
+      dayCard.className = 'day-card';
+      
+      const isOpened = openedDays.includes(day);
+      const isToday = day === today;
+      const isLocked = day > today;
+
+      if (isOpened) {
+        dayCard.classList.add('opened');
+      }
+      if (isToday && !isOpened) {
+        dayCard.classList.add('active');
+      }
+      if (isLocked) {
+        dayCard.classList.add('locked');
+      }
+
+      dayCard.innerHTML = `
+        <div class="day-number">${day}</div>
+        <div class="day-label">${isToday ? 'HOY' : isOpened ? 'Leído ✓' : isLocked ? 'Bloqueado' : 'Disponible'}</div>
+        <div class="day-icon">${messages[day]?.emoji || '💌'}</div>
+      `;
+
+      if (!isLocked) {
+        dayCard.addEventListener('click', () => openMessage(day));
+      }
+
+      calendarGrid.appendChild(dayCard);
+    }
+
+    function openMessage(day) {
+      const message = messages[day];
+      if (!message) {
+        messageEmoji.textContent = '💌';
+        messageTitle.textContent = `Día ${day}`;
+        messageText.textContent = 'Mensaje no disponible aún.';
+      } else {
+        messageDate.textContent = `Día ${day} de ${new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`;
+        messageEmoji.textContent = message.emoji;
+        messageTitle.textContent = message.title;
+        messageText.textContent = message.text;
+      }
+
+      messageModal.style.display = 'flex';
+
+      // Marcar como leído
+      if (!openedDays.includes(day)) {
+        openedDays.push(day);
+        localStorage.setItem('openedDays', JSON.stringify(openedDays));
+      }
+    }
+
+    closeModal.addEventListener('click', () => {
+      messageModal.style.display = 'none';
+      location.reload(); // Recargar para actualizar estados
+    });
+
+    messageModal.addEventListener('click', (e) => {
+      if (e.target === messageModal) {
+        messageModal.style.display = 'none';
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html>

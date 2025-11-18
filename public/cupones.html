@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cupones de Amor 💝</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4, #ffe0f0, #ffd6e8);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 0.9em;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .menu-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.5);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 80px auto 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff6699;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .points-banner {
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: white;
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(255, 102, 153, 0.3);
+    }
+
+    .points-banner h2 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .points-banner p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .points-info {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .points-info h3 {
+      color: #ff6699;
+      margin-bottom: 10px;
+    }
+
+    .points-info p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .coupons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .coupon-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(255, 102, 153, 0.2);
+      transition: 0.3s;
+      position: relative;
+      border: 3px dashed #ffb6d9;
+    }
+
+    .coupon-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(255, 102, 153, 0.3);
+    }
+
+    .coupon-card.used {
+      opacity: 0.5;
+      filter: grayscale(100%);
+    }
+
+    .coupon-card.locked {
+      opacity: 0.7;
+      border-color: #ccc;
+    }
+
+    .coupon-header {
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .coupon-header.locked {
+      background: linear-gradient(135deg, #999, #bbb);
+    }
+
+    .coupon-points {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #ff6699;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+
+    .coupon-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .coupon-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .coupon-subtitle {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .coupon-body {
+      padding: 25px;
+    }
+
+    .coupon-description {
+      color: #666;
+      font-size: 1em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .coupon-code {
+      background: #fff5f8;
+      border: 2px dashed #ffb6d9;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      color: #ff6699;
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    .coupon-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .coupon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+    }
+
+    .coupon-btn.used {
+      background: #4caf50;
+      cursor: not-allowed;
+    }
+
+    .coupon-btn.locked {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .used-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 3em;
+      color: #4caf50;
+      font-weight: bold;
+      opacity: 0.3;
+      pointer-events: none;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .locked-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4em;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .stats {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(255, 102, 153, 0.2);
+    }
+
+    .stats h2 {
+      color: #ff6699;
+      margin-bottom: 15px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .stat-item {
+      background: #fff5f8;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff6699;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      .coupons-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-button {
+        padding: 10px 15px;
+        font-size: 0.8em;
+      }
+
+      .points-banner h2 {
+        font-size: 2em;
+      }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: zoomIn 0.4s ease;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-icon {
+      font-size: 5em;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 2em;
+      color: #ff6699;
+      margin-bottom: 15px;
+    }
+
+    .modal-text {
+      color: #666;
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .modal-btn {
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 5px;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+    }
+
+    .modal-btn.secondary {
+      background: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+
+  <div class="container">
+    <h1>💝 Cupones de Amor</h1>
+    <p class="subtitle">Gana puntos en la trivia y desbloquea cupones especiales 💕</p>
+
+    <div class="points-banner">
+      <h2 id="totalPointsDisplay">0 💰</h2>
+      <p>Puntos disponibles</p>
+    </div>
+
+    <div class="points-info">
+      <h3>💡 ¿Cómo funciona?</h3>
+      <p>
+        Juega la trivia "¿Cuánto me conoces?" para ganar puntos. 
+        Usa tus puntos para desbloquear cupones especiales que puedes canjear en la vida real. 
+        Cada cupón cuesta diferentes puntos según su valor. ¡Diviértete! 🎮
+      </p>
+    </div>
+
+    <div class="coupons-grid" id="couponsGrid"></div>
+
+    <div class="stats">
+      <h2>📊 Estadísticas</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="totalCoupons">0</div>
+          <div class="stat-label">Total cupones</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="unlockedCoupons">0</div>
+          <div class="stat-label">Desbloqueados</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="usedCoupons">0</div>
+          <div class="stat-label">Usados</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="lockedCoupons">0</div>
+          <div class="stat-label">Bloqueados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="unlockModal">
+    <div class="modal-content">
+      <div class="modal-icon">🔓</div>
+      <h2 class="modal-title">Desbloquear Cupón</h2>
+      <p class="modal-text" id="unlockMessage"></p>
+      <button class="modal-btn" id="confirmUnlock">Sí, desbloquear</button>
+      <button class="modal-btn secondary" onclick="closeUnlockModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="modal" id="redeemModal">
+    <div class="modal-content">
+      <div class="modal-icon">🎉</div>
+      <h2 class="modal-title">¡Cupón Canjeado!</h2>
+      <p class="modal-text" id="modalMessage"></p>
+      <button class="modal-btn" onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="modal" id="noPointsModal">
+    <div class="modal-content">
+      <div class="modal-icon">😅</div>
+      <h2 class="modal-title">¡Puntos insuficientes!</h2>
+      <p class="modal-text" id="noPointsMessage"></p>
+      <button class="modal-btn" onclick="window.location.href='trivia.html'">Jugar Trivia 🎮</button>
+      <button class="modal-btn secondary" onclick="closeNoPointsModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ CONFIGURA TUS CUPONES AQUÍ
+    const coupons = [
+      {
+        id: 1,
+        icon: "☕",
+        title: "Café date",
+        subtitle: "Tu cafetería favorita",
+        description: "Vamos a tomar café donde tú elijas",
+        code: "COFFEE",
+        points: 20 // Cupón económico
+      },
+      {
+        id: 2,
+        icon: "🍿",
+        title: "Noche de películas",
+        subtitle: "Tú eliges",
+        description: "Eliges la película y yo preparo las palomitas",
+        code: "MOVIE-NIGHT",
+        points: 30
+      },
+      {
+        id: 3,
+        icon: "📸",
+        title: "Sesión de fotos",
+        subtitle: "Tú de modelo",
+        description: "Te tomo todas las fotos que quieras",
+        code: "PHOTOSHOOT",
+        points: 40
+      },
+      {
+        id: 4,
+        icon: "🎮",
+        title: "Día de juegos",
+        subtitle: "Sin límites",
+        description: "Jugamos lo que tú quieras todo el día",
+        code: "GAMEDAY",
+        points: 50
+      },
+      {
+        id: 5,
+        icon: "🍕",
+        title: "Cena sorpresa",
+        subtitle: "Tu comida favorita",
+        description: "Preparo o pido tu comida favorita",
+        code: "DINNER",
+        points: 60
+      },
+      {
+        id: 6,
+        icon: "💆",
+        title: "Masaje relajante",
+        subtitle: "30 minutos",
+        description: "Vale por un masaje de 30 minutos donde y cuando quieras",
+        code: "MASSAGE30",
+        points: 70
+      },
+      {
+        id: 7,
+        icon: "🍳",
+        title: "Desayuno en la cama",
+        subtitle: "Fin de semana",
+        description: "Un delicioso desayuno preparado con amor",
+        code: "BREAKFAST",
+        points: 80
+      },
+      {
+        id: 8,
+        icon: "🎨",
+        title: "Día creativo",
+        subtitle: "Actividad juntos",
+        description: "Hacemos cualquier actividad creativa que quieras",
+        code: "CREATIVE",
+        points: 90
+      },
+      {
+        id: 9,
+        icon: "🎵",
+        title: "Karaoke privado",
+        subtitle: "Sin juicios",
+        description: "Cantamos juntos sin que nadie nos juzgue",
+        code: "KARAOKE",
+        points: 100
+      },
+      {
+        id: 10,
+        icon: "🚗",
+        title: "Paseo sorpresa",
+        subtitle: "Aventura",
+        description: "Te llevo a un lugar especial sorpresa",
+        code: "ROADTRIP",
+        points: 120
+      },
+      {
+        id: 11,
+        icon: "🎁",
+        title: "Regalo sorpresa",
+        subtitle: "Sin ocasión especial",
+        description: "Un regalo pequeño pero significativo",
+        code: "GIFT",
+        points: 150
+      },
+      {
+        id: 12,
+        icon: "💝",
+        title: "Día especial",
+        subtitle: "Todo sobre ti",
+        description: "Un día completo haciendo lo que tú quieras",
+        code: "YOURDAY",
+        points: 200 // Cupón premium
+      }
+    ];
+
+    const couponsGrid = document.getElementById('couponsGrid');
+    const unlockModal = document.getElementById('unlockModal');
+    const redeemModal = document.getElementById('redeemModal');
+    const noPointsModal = document.getElementById('noPointsModal');
+    const unlockMessage = document.getElementById('unlockMessage');
+    const modalMessage = document.getElementById('modalMessage');
+    const noPointsMessage = document.getElementById('noPointsMessage');
+    const confirmUnlock = document.getElementById('confirmUnlock');
+    
+    let unlockedCoupons = JSON.parse(localStorage.getItem('unlockedCoupons') || '[]');
+    let usedCoupons = JSON.parse(localStorage.getItem('usedCoupons') || '[]');
+    let selectedCoupon = null;
+
+    function getTotalPoints() {
+      return parseInt(localStorage.getItem('triviaPoints') || '0');
+    }
+
+    function updatePointsDisplay() {
+      document.getElementById('totalPointsDisplay').textContent = getTotalPoints() + ' 💰';
+    }
+
+    function renderCoupons() {
+      couponsGrid.innerHTML = '';
+      
+      coupons.forEach(coupon => {
+        const isUnlocked = unlockedCoupons.includes(coupon.id);
+        const isUsed = usedCoupons.includes(coupon.id);
+        
+        const card = document.createElement('div');
+        card.className = `coupon-card ${isUsed ? 'used' : ''} ${!isUnlocked ? 'locked' : ''}`;
+        card.innerHTML = `
+          ${isUsed ? '<div class="used-stamp">USADO ✓</div>' : ''}
+          ${!isUnlocked && !isUsed ? '<div class="locked-stamp">🔒</div>' : ''}
+          <div class="coupon-header ${!isUnlocked ? 'locked' : ''}">
+            <div class="coupon-points">${coupon.points} pts</div>
+            <div class="coupon-icon">${coupon.icon}</div>
+            <div class="coupon-title">${coupon.title}</div>
+            <div class="coupon-subtitle">${coupon.subtitle}</div>
+          </div>
+          <div class="coupon-body">
+            <p class="coupon-description">${coupon.description}</p>
+            <div class="coupon-code">${coupon.code}</div>
+            <button class="coupon-btn ${isUsed ? 'used' : ''} ${!isUnlocked ? 'locked' : ''}" 
+                    onclick="${!isUnlocked ? `unlockCoupon(${coupon.id})` : (isUsed ? '' : `redeemCoupon(${coupon.id})`))}"
+                    ${isUsed ? 'disabled' : ''}>
+              ${isUsed ? '✓ Ya usado' : (!isUnlocked ? '🔒 Desbloquear (' + coupon.points + ' pts)' : '🎁 Canjear cupón')}
+            </button>
+          </div>
+        `;
+        
+        couponsGrid.appendChild(card);
+      });
+
+      updateStats();
+      updatePointsDisplay();
+    }
+
+    function unlockCoupon(id) {
+      const coupon = coupons.find(c => c.id === id);
+      if (!coupon) return;
+
+      const currentPoints = getTotalPoints();
+      
+      if (currentPoints < coupon.points) {
+        noPointsMessage.textContent = `Necesitas ${coupon.points} puntos para desbloquear este cupón. Te faltan ${coupon.points - currentPoints} puntos. ¡Juega la trivia para ganar más puntos!`;
+        noPointsModal.style.display = 'flex';
+        return;
+      }
+
+      selectedCoupon = coupon;
+      unlockMessage.textContent = `¿Quieres desbloquear "${coupon.title}" por ${coupon.points} puntos?`;
+      unlockModal.style.display = 'flex';
+    }
+
+    confirmUnlock.addEventListener('click', () => {
+      if (!selectedCoupon) return;
+
+      const currentPoints = getTotalPoints();
+      const newPoints = currentPoints - selectedCoupon.points;
+      localStorage.setItem('triviaPoints', newPoints);
+
+      unlockedCoupons.push(selectedCoupon.id);
+      localStorage.setItem('unlockedCoupons', JSON.stringify(unlockedCoupons));
+
+      closeUnlockModal();
+      renderCoupons();
+    });
+
+    function redeemCoupon(id) {
+      const coupon = coupons.find(c => c.id === id);
+      if (!coupon) return;
+
+      usedCoupons.push(id);
+      localStorage.setItem('usedCoupons', JSON.stringify(usedCoupons));
+
+      modalMessage.textContent = `Has canjeado: "${coupon.title}". ¡Espero que lo disfrutes mucho! 💖`;
+      redeemModal.style.display = 'flex';
+
+      renderCoupons();
+    }
+
+    function closeModal() {
+      redeemModal.style.display = 'none';
+    }
+
+    function closeUnlockModal() {
+      unlockModal.style.display = 'none';
+      selectedCoupon = null;
+    }
+
+    function closeNoPointsModal() {
+      noPointsModal.style.display = 'none';
+    }
+
+    function updateStats() {
+      document.getElementById('totalCoupons').textContent = coupons.length;
+      document.getElementById('unlockedCoupons').textContent = unlockedCoupons.length;
+      document.getElementById('usedCoupons').textContent = usedCoupons.length;
+      document.getElementById('lockedCoupons').textContent = coupons.length - unlockedCoupons.length;
+    }
+
+    unlockModal.addEventListener('click', (e) => {
+      if (e.target === unlockModal) {
+        closeUnlockModal();
+      }
+    });
+
+    redeemModal.addEventListener('click', (e) => {
+      if (e.target === redeemModal) {
+        closeModal();
+      }
+    });
+
+    noPointsModal.addEventListener('click', (e) => {
+      if (e.target === noPointsModal) {
+        closeNoPointsModal();
+      }
+    });
+
+    renderCoupons();
+  </script>
+</body>
+</html>

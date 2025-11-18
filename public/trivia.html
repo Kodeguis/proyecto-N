@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Cuánto me conoces? 💕</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4, #ffe0f0, #ffd6e8);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 0.9em;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    .menu-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.5);
+    }
+
+    .trivia-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(255, 102, 153, 0.3);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .trivia-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .trivia-header h1 {
+      color: #ff6699;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .trivia-header p {
+      color: #666;
+      font-size: 1em;
+    }
+
+    .progress-bar {
+      background: #f0f0f0;
+      border-radius: 10px;
+      height: 20px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #ff6699, #ff85b8);
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .question-card {
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+
+    .question-card.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .question-number {
+      color: #ff6699;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.3em;
+      color: #333;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #ffb6d9;
+      border-radius: 12px;
+      padding: 15px 20px;
+      font-size: 1em;
+      color: #333;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .option-btn:hover {
+      background: #fff5f8;
+      border-color: #ff6699;
+      transform: translateX(5px);
+    }
+
+    .option-btn.correct {
+      background: #e8f5e9;
+      border-color: #4caf50;
+      animation: correctAnim 0.5s ease;
+    }
+
+    .option-btn.incorrect {
+      background: #ffebee;
+      border-color: #f44336;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes correctAnim {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .result-screen {
+      display: none;
+      text-align: center;
+    }
+
+    .result-screen.active {
+      display: block;
+      animation: zoomIn 0.6s ease;
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .result-emoji {
+      font-size: 5em;
+      margin-bottom: 20px;
+    }
+
+    .result-title {
+      font-size: 2em;
+      color: #ff6699;
+      margin-bottom: 15px;
+    }
+
+    .result-score {
+      font-size: 3em;
+      font-weight: bold;
+      color: #ff6699;
+      margin-bottom: 20px;
+    }
+
+    .result-message {
+      font-size: 1.2em;
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      background: linear-gradient(135deg, #ff6699, #ff85b8);
+      border: none;
+      color: white;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 5px 15px rgba(255, 102, 153, 0.3);
+    }
+
+    .restart-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 102, 153, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .trivia-container {
+        padding: 30px 20px;
+      }
+
+      .trivia-header h1 {
+        font-size: 2em;
+      }
+
+      .question-text {
+        font-size: 1.1em;
+      }
+
+      .menu-button {
+        padding: 10px 15px;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-button" onclick="window.location.href='index.html'">🏠 Menú Principal</button>
+
+  <div class="trivia-container">
+    <div class="trivia-header">
+      <h1>¿Cuánto me conoces? 💕</h1>
+      <p>Responde estas preguntas sobre nuestra relación</p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <h2 class="result-title">¡Juego terminado!</h2>
+      <div class="result-score" id="resultScore"></div>
+      <p class="result-message" id="resultMessage"></p>
+      <button class="restart-btn" onclick="location.reload()">Jugar de nuevo 🔄</button>
+    </div>
+  </div>
+
+<script>
+  // ⚠️ CONFIGURA TUS PREGUNTAS AQUÍ
+  const questions = [
+    {
+      question: "¿Cuál es mi comida favorita?",
+      options: ["Pizza", "Hamburguesa", "Ceviche", "Pollo a la brasa"],
+      correct: 2,
+      points: 10 // Puntos por respuesta correcta
+    },
+    {
+      question: "¿En qué mes nos conocimos?",
+      options: ["Enero", "Febrero", "Marzo", "Abril"],
+      correct: 1,
+      points: 10
+    },
+    {
+      question: "¿Cuál es mi deporte favorito?",
+      options: ["Fútbol", "Básquet", "Vóley", "Natación"],
+      correct: 1,
+      points: 10
+    },
+    {
+      question: "¿Qué película me gusta más?",
+      options: ["Titanic", "The Notebook", "Avengers", "Interestelar"],
+      correct: 3,
+      points: 10
+    },
+    {
+      question: "¿Cuál es mi color favorito?",
+      options: ["Rojo", "Azul", "Rosa", "Negro"],
+      correct: 2,
+      points: 10
+    },
+    {
+      question: "¿Qué me gusta hacer en mi tiempo libre?",
+      options: ["Leer", "Videojuegos", "Dibujar", "Ver series"],
+      correct: 1,
+      points: 10
+    },
+    {
+      question: "¿Cuál es mi mayor miedo?",
+      options: ["Arañas", "Alturas", "Perderte", "Oscuridad"],
+      correct: 2,
+      points: 15 // Pregunta más difícil = más puntos
+    },
+    {
+      question: "¿Qué es lo que más amo de ti?",
+      options: ["Tu sonrisa", "Tus ojos", "Tu forma de ser", "Todo"],
+      correct: 3,
+      points: 15
+    },
+    {
+      question: "¿Cuál es nuestro lugar especial?",
+      options: ["El parque", "La playa", "El café", "Donde estemos juntos"],
+      correct: 3,
+      points: 15
+    },
+    {
+      question: "¿Qué canción me recuerda a ti?",
+      options: ["Perfect", "Thinking Out Loud", "All of Me", "Todas las anteriores"],
+      correct: 3,
+      points: 20 // Última pregunta = más puntos
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let totalPoints = 0;
+  const questionsContainer = document.getElementById('questionsContainer');
+  const progressFill = document.getElementById('progressFill');
+  const resultScreen = document.getElementById('resultScreen');
+  const resultEmoji = document.getElementById('resultEmoji');
+  const resultScore = document.getElementById('resultScore');
+  const resultMessage = document.getElementById('resultMessage');
+
+  function loadQuestion() {
+    if (currentQuestion >= questions.length) {
+      showResults();
+      return;
+    }
+
+    const q = questions[currentQuestion];
+    const card = document.createElement('div');
+    card.className = 'question-card active';
+    card.innerHTML = `
+      <div class="question-number">Pregunta ${currentQuestion + 1} de ${questions.length}</div>
+      <div class="question-text">${q.question}</div>
+      <div style="text-align: center; color: #ff6699; font-weight: 600; margin-bottom: 15px;">
+        💰 ${q.points} puntos
+      </div>
+      <div class="options" id="options-${currentQuestion}"></div>
+    `;
+    
+    questionsContainer.innerHTML = '';
+    questionsContainer.appendChild(card);
+
+    const optionsContainer = document.getElementById(`options-${currentQuestion}`);
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = option;
+      btn.onclick = () => selectAnswer(index, q.correct, q.points, btn);
+      optionsContainer.appendChild(btn);
+    });
+
+    updateProgress();
+  }
+
+  function selectAnswer(selected, correct, points, btn) {
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach(b => b.style.pointerEvents = 'none');
+
+    if (selected === correct) {
+      btn.classList.add('correct');
+      score++;
+      totalPoints += points;
+    } else {
+      btn.classList.add('incorrect');
+      allButtons[correct].classList.add('correct');
+    }
+
+    setTimeout(() => {
+      currentQuestion++;
+      loadQuestion();
+    }, 1500);
+  }
+
+  function updateProgress() {
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    progressFill.style.width = progress + '%';
+  }
+
+  function showResults() {
+    questionsContainer.style.display = 'none';
+    resultScreen.classList.add('active');
+
+    const percentage = (score / questions.length) * 100;
+    resultScore.textContent = `${score} / ${questions.length}`;
+
+    // Guardar puntos totales
+    let currentTotalPoints = parseInt(localStorage.getItem('triviaPoints') || '0');
+    currentTotalPoints += totalPoints;
+    localStorage.setItem('triviaPoints', currentTotalPoints);
+
+    if (percentage === 100) {
+      resultEmoji.textContent = '🏆';
+      resultMessage.innerHTML = `
+        ¡Perfecto! Me conoces completamente. Eres increíble y te amo muchísimo. 💖<br><br>
+        <strong style="color: #ff6699; font-size: 1.5em;">
+          ¡Ganaste ${totalPoints} puntos! 💰
+        </strong><br>
+        <span style="color: #666;">Total acumulado: ${currentTotalPoints} puntos</span><br><br>
+        <small>Usa tus puntos para desbloquear cupones especiales 🎁</small>
+      `;
+    } else if (percentage >= 80) {
+      resultEmoji.textContent = '😍';
+      resultMessage.innerHTML = `
+        ¡Excelente! Me conoces muy bien. Eres maravillosa y cada día me enamoro más de ti. 💕<br><br>
+        <strong style="color: #ff6699; font-size: 1.5em;">
+          ¡Ganaste ${totalPoints} puntos! 💰
+        </strong><br>
+        <span style="color: #666;">Total acumulado: ${currentTotalPoints} puntos</span>
+      `;
+    } else if (percentage >= 60) {
+      resultEmoji.textContent = '😊';
+      resultMessage.innerHTML = `
+        ¡Muy bien! Nos conocemos bastante. Sigamos creando más recuerdos juntos. 💗<br><br>
+        <strong style="color: #ff6699; font-size: 1.5em;">
+          ¡Ganaste ${totalPoints} puntos! 💰
+        </strong><br>
+        <span style="color: #666;">Total acumulado: ${currentTotalPoints} puntos</span>
+      `;
+    } else if (percentage >= 40) {
+      resultEmoji.textContent = '🤔';
+      resultMessage.innerHTML = `
+        Mmm, parece que aún tenemos mucho por descubrir. ¡Pero eso es emocionante! 💓<br><br>
+        <strong style="color: #ff6699; font-size: 1.5em;">
+          Ganaste ${totalPoints} puntos 💰
+        </strong><br>
+        <span style="color: #666;">Total acumulado: ${currentTotalPoints} puntos</span>
+      `;
+    } else {
+      resultEmoji.textContent = '😅';
+      resultMessage.innerHTML = `
+        ¡Jajaja! Tenemos que pasar más tiempo juntos. Pero igual te quiero mucho. 💖<br><br>
+        <strong style="color: #ff6699; font-size: 1.5em;">
+          Ganaste ${totalPoints} puntos 💰
+        </strong><br>
+        <span style="color: #666;">Total acumulado: ${currentTotalPoints} puntos</span>
+      `;
+    }
+  }
+
+  loadQuestion();
+</script>
+</body>
+</html>
