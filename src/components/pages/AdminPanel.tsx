@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Sparkles, Gift, Settings, TrendingUp, RefreshCw, Trophy, CalendarDays } from 'lucide-react';
 import { RomanticButton } from '../ui/RomanticButton';
-import { useStore } from '../../stores/appStore';
+import { useStore } from '../../stores/appStoreDB';
 
 export const AdminPanel = () => {
   const [pointsAdjust, setPointsAdjust] = useState('');
   const [activityLog, setActivityLog] = useState<string[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
   const userData = useStore((state) => state.userData);
   const setUserData = useStore((state) => state.setUserData);
   const addPoints = useStore((state) => state.addPoints);
+  const adminUpdatePoints = useStore((state) => state.adminUpdatePoints);
   const setCurrentPage = useStore((state) => state.setCurrentPage);
 
   const coupons = [

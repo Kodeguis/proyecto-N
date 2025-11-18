@@ -52,6 +52,9 @@ export interface AppState {
   // Database sync
   syncUserData: () => Promise<void>;
   initializeUser: (userId: string) => Promise<void>;
+  
+  // Admin functions
+  adminUpdatePoints: (userId: string, points: number) => Promise<boolean>;
 }
 
 const initialUserData: UserData = {
@@ -278,6 +281,17 @@ export const useStore = create<AppState>()(
           }
         } catch (error) {
           console.error('Error inicializando usuario:', error);
+        }
+      },
+
+      // Función especial para admin - puede actualizar puntos de cualquier usuario
+      adminUpdatePoints: async (userId: string, points: number) => {
+        try {
+          const success = await api.pointsAPI.updatePoints(userId, points);
+          return success;
+        } catch (error) {
+          console.error('Error actualizando puntos como admin:', error);
+          return false;
         }
       },
 

@@ -127,31 +127,12 @@ export const Birthday2025: React.FC = () => {
     console.log('setCurrentPage disponible:', typeof setCurrentPage);
     console.log('Antes de setCurrentPage - currentStep:', currentStep);
     
-    try {
-      // Método principal: usar setCurrentPage directamente
-      console.log('Intentando método 1: setCurrentPage directo');
-      setCurrentPage('menu');
-      
-      // Verificar que el cambio se aplicó
-      setTimeout(() => {
-        const store = useStore.getState();
-        console.log('Estado después de navegación:', store.currentPage);
-        
-        // Si no cambió, intentar método de respaldo
-        if (store.currentPage !== 'menu') {
-          console.log('⚠️ Navegación no funcionó, intentando método de respaldo');
-          store.setCurrentPage('menu');
-        }
-      }, 100);
-      
-      console.log('✅ setCurrentPage(\"menu\") ejecutado exitosamente');
-    } catch (error) {
-      console.error('❌ Error en setCurrentPage:', error);
-      
-      // Método de emergencia: forzar con window.location
-      console.log('Intentando método de emergencia: window.location');
-      // window.location.href = '/'; // Descomentar si todo falla
-    }
+    // Método simple y directo
+    console.log('Intentando navegación directa a menu');
+    setCurrentPage('menu');
+    
+    // Verificación inmediata
+    console.log('Navegación ejecutada');
   };
 
   const handleBackToPanel2 = () => {

@@ -87,11 +87,42 @@ export const authAPI = {
     }
 
     return data;
+  },
+
+  async getAllUsers(): Promise<User[]> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo usuarios:', error);
+      return [];
+    }
+
+    return data || [];
   }
 };
 
 // Funciones de puntos
 export const pointsAPI = {
+  async getAllUserPoints(): Promise<Array<User & { user_points: UserPoints | null }>> {
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        user_points!inner(*)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo puntos de usuarios:', error);
+      return [];
+    }
+
+    return data || [];
+  },
+
   async getUserPoints(userId: string): Promise<UserPoints | null> {
     const { data, error } = await supabase
       .from('user_points')
