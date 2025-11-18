@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const currentPage = useStore((state) => state.currentPage);
+  const setCurrentPage = useStore((state) => state.setCurrentPage);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const isAdmin = useStore((state) => state.isAdmin);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,13 +37,13 @@ function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'login':
-        return <Login />;
+        return <Login setCurrentPage={setCurrentPage} />;
       case 'register':
-        return <Register />;
+        return <Register setCurrentPage={setCurrentPage} />;
       case 'admin-login':
         return <AdminLogin />;
       case 'menu':
-        return isAuthenticated ? <Menu /> : <Login />;
+        return isAuthenticated ? <Menu /> : <Login setCurrentPage={setCurrentPage} />;
       case 'admin':
         return isAdmin ? <AdminPanel /> : <AdminLogin />;
       case 'trivia-admin':
@@ -50,15 +51,15 @@ function App() {
       case 'daily-messages-admin':
         return isAdmin ? <DailyMessagesAdmin /> : <AdminLogin />;
       case 'cumpleanos':
-        return isAuthenticated ? <Birthday2025 /> : <Login />;
+        return isAuthenticated ? <Birthday2025 /> : <Login setCurrentPage={setCurrentPage} />;
       case 'mensajes-diarios':
-        return isAuthenticated ? <DailyMessages /> : <Login />;
+        return isAuthenticated ? <DailyMessages /> : <Login setCurrentPage={setCurrentPage} />;
       case 'trivia':
-        return isAuthenticated ? <Trivia /> : <Login />;
+        return isAuthenticated ? <Trivia /> : <Login setCurrentPage={setCurrentPage} />;
       case 'cupones':
-        return isAuthenticated ? <Coupons /> : <Login />;
+        return isAuthenticated ? <Coupons /> : <Login setCurrentPage={setCurrentPage} />;
       default:
-        return <Login />;
+        return <Login setCurrentPage={setCurrentPage} />;
     }
   };
 

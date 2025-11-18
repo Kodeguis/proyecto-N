@@ -5,7 +5,7 @@ import { FloatingHearts } from '../ui/FloatingHearts';
 import { RomanticButton } from '../ui/RomanticButton';
 import { useStore } from '../../stores/appStoreDB';
 
-export const Login = () => {
+export const Login = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);

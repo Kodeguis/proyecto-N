@@ -5,16 +5,15 @@ import { FloatingHearts } from '../ui/FloatingHearts';
 import { RomanticButton } from '../ui/RomanticButton';
 import { useStore } from '../../stores/appStoreDB';
 import api from '../../lib/api';
+import { supabase } from '../../lib/supabase';
 
-export const Register = () => {
+export const Register = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  
-  const setCurrentPage = useStore((state) => state.setCurrentPage);
 
   const handleRegister = async () => {
     if (!username.trim() || !password.trim()) {
@@ -37,7 +36,7 @@ export const Register = () => {
 
     try {
       // Verificar si el usuario ya existe
-      const { data: existingUser } = await api.supabase
+      const { data: existingUser } = await supabase
         .from('users')
         .select('id')
         .eq('username', username)

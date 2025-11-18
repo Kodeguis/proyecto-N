@@ -74,7 +74,7 @@ export const AnimatedBackground: React.FC = () => {
       transition: {
         duration: item.duration,
         delay: item.delay,
-        ease: "linear",
+        ease: "linear" as const,
         opacity: { times: [0, 0.1, 0.9, 1] },
         scale: { times: [0, 0.1, 0.9, 1] }
       },

@@ -83,7 +83,7 @@ export const authAPI = {
 
     // Crear registro de puntos para el nuevo usuario
     if (data) {
-      await api.pointsAPI.createUserPoints(data.id);
+      await pointsAPI.createUserPoints(data.id);
     }
 
     return data;
