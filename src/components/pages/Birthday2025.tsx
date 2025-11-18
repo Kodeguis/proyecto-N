@@ -128,10 +128,24 @@ export const Birthday2025: React.FC = () => {
     console.log('Antes de setCurrentPage - currentStep:', currentStep);
     
     try {
+      // Intentar múltiples métodos para asegurar que funcione
+      console.log('Intentando método 1: setCurrentPage directo');
       setCurrentPage('menu');
-      console.log('✅ setCurrentPage("menu") ejecutado exitosamente');
+      
+      // También intentar con el store directo como respaldo
+      console.log('Intentando método 2: store directo');
+      const store = useStore.getState();
+      if (store && store.setCurrentPage) {
+        store.setCurrentPage('menu');
+      }
+      
+      console.log('✅ setCurrentPage(\"menu\") ejecutado exitosamente');
     } catch (error) {
       console.error('❌ Error en setCurrentPage:', error);
+      
+      // Método de emergencia: forzar con window.location
+      console.log('Intentando método de emergencia: window.location');
+      // window.location.href = '/'; // Descomentar si todo falla
     }
   };
 
@@ -143,8 +157,8 @@ export const Birthday2025: React.FC = () => {
     <div className="min-h-screen bg-romantic-gradient bg-[length:400%_400%] animate-gradient-shift relative overflow-hidden">
       <AnimatedBackground />
       
-      {/* Navigation Buttons */}
-      <div className="fixed top-4 left-4 z-50 flex gap-2">
+      {/* Navigation Buttons - MOVIDO A LA DERECHA */}
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
         <RomanticButton
           onClick={() => {
             console.log('=== BOTÓN MENÚ PRINCIPAL CLICADO ===');
