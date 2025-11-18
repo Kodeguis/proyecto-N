@@ -127,12 +127,12 @@ export const Birthday2025: React.FC = () => {
     console.log('setCurrentPage disponible:', typeof setCurrentPage);
     console.log('Antes de setCurrentPage - currentStep:', currentStep);
     
-    // Método simple y directo
-    console.log('Intentando navegación directa a menu');
+    // Método simple y directo - versión actualizada
+    console.log('Intentando navegación directa a menu - versión actualizada');
     setCurrentPage('menu');
     
     // Verificación inmediata
-    console.log('Navegación ejecutada');
+    console.log('Navegación ejecutada - nueva versión');
   };
 
   const handleBackToPanel2 = () => {

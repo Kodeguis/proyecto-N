@@ -101,6 +101,18 @@ export const authAPI = {
     }
 
     return data || [];
+  },
+
+  async getAllUsersWithPoints(): Promise<any[]> {
+    const { data, error } = await supabase
+      .rpc('get_all_users_with_points');
+
+    if (error) {
+      console.error('Error obteniendo usuarios con puntos:', error);
+      return [];
+    }
+
+    return data || [];
   }
 };
 
@@ -183,6 +195,21 @@ export const pointsAPI = {
     }
 
     return true;
+  },
+
+  async adminUpdatePoints(userId: string, pointsToAdd: number): Promise<boolean> {
+    const { data, error } = await supabase
+      .rpc('admin_update_user_points', {
+        target_user_id: userId,
+        points_to_add: pointsToAdd
+      });
+
+    if (error) {
+      console.error('Error actualizando puntos como admin:', error);
+      return false;
+    }
+
+    return data || false;
   },
 
   async spendPoints(userId: string, points: number): Promise<boolean> {
