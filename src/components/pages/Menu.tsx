@@ -107,9 +107,11 @@ export const Menu = () => {
   ];
 
   const handleMenuClick = (item: MenuItem) => {
+    console.log('Menu item clicked:', item.id, 'Locked:', item.isLocked);
     if (item.isLocked) {
       return;
     }
+    console.log('Setting current page to:', item.id);
     setCurrentPage(item.id);
   };
 

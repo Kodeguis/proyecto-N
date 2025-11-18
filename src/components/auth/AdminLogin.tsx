@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, ArrowLeft } from 'lucide-react';
 import { RomanticButton } from '../ui/RomanticButton';
-import { useStore } from '../../stores/appStore';
+import { useStore } from '../../stores/appStoreDB';
 
 export const AdminLogin = () => {
   const [password, setPassword] = useState('');
@@ -14,6 +14,7 @@ export const AdminLogin = () => {
   const handleAdminLogin = async () => {
     if (!password.trim()) return;
     
+    console.log('Intentando login admin con password:', password);
     setIsLoading(true);
     setError(false);
     
@@ -21,6 +22,7 @@ export const AdminLogin = () => {
     await new Promise(resolve => setTimeout(resolve, 800));
     
     const success = adminLogin(password);
+    console.log('Login admin resultado:', success);
     if (!success) {
       setError(true);
       setPassword('');
