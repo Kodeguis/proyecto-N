@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="heartGradient512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6699"/>
+      <stop offset="100%" style="stop-color:#ff85b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="50" fill="url(#heartGradient512)"/>
+  <path d="M256 380C256 380 130 300 130 220C130 175 155 140 185 140C215 140 245 155 256 175C267 155 297 140 327 140C357 140 382 175 382 220C382 300 256 380 256 380Z" fill="white" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
