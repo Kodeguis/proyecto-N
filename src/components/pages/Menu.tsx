@@ -116,7 +116,16 @@ export const Menu = () => {
   };
 
   const handleAdminClick = () => {
+    console.log('Admin button clicked, setting page to admin-login');
     setCurrentPage('admin-login');
+  };
+
+  // Botón de prueba para debug
+  const handleTestClick = () => {
+    console.log('Test button - current user:', currentUser);
+    console.log('Test button - userData:', userData);
+    console.log('Test button - attempting to set page to cumpleanos');
+    setCurrentPage('cumpleanos');
   };
 
   return (
@@ -140,6 +149,13 @@ export const Menu = () => {
           </div>
           
           <div className="flex gap-3">
+            <RomanticButton
+              onClick={handleTestClick}
+              variant="secondary"
+              size="sm"
+            >
+              🧪
+            </RomanticButton>
             <RomanticButton
               onClick={handleAdminClick}
               variant="secondary"

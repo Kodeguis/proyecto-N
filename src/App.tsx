@@ -12,6 +12,7 @@ import { Trivia } from './components/pages/Trivia';
 import { Coupons } from './components/pages/Coupons';
 import { TriviaAdmin } from './components/admin/TriviaAdmin';
 import { DailyMessagesAdmin } from './components/admin/DailyMessagesAdmin';
+import { DebugPanel } from './components/ui/DebugPanel';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
           {renderCurrentPage()}
         </motion.div>
       </AnimatePresence>
+      <DebugPanel />
     </div>
   );
 }
