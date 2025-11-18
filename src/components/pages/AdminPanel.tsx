@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Sparkles, Gift, Settings, TrendingUp, RefreshCw, Trophy, CalendarDays } from 'lucide-react';
 import { RomanticButton } from '../ui/RomanticButton';
 import { useStore } from '../../stores/appStoreDB';
+import api from '../../lib/api';
 
 export const AdminPanel = () => {
   const [pointsAdjust, setPointsAdjust] = useState('');
@@ -14,6 +15,24 @@ export const AdminPanel = () => {
   const addPoints = useStore((state) => state.addPoints);
   const adminUpdatePoints = useStore((state) => state.adminUpdatePoints);
   const setCurrentPage = useStore((state) => state.setCurrentPage);
+
+  useEffect(() => {
+    console.log('AdminPanel montado - versión con gestión de usuarios');
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      const usersWithPoints = await api.authAPI.getAllUsersWithPoints();
+      
+      setUsers(usersWithPoints);
+      if (usersWithPoints.length > 0 && !selectedUserId) {
+        setSelectedUserId(usersWithPoints[0].id);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
+    }
+  };
 
   const coupons = [
     { id: 1, icon: "☕", name: "Café" },
@@ -36,12 +55,18 @@ export const AdminPanel = () => {
     setActivityLog(prev => [logEntry, ...prev].slice(0, 20));
   };
 
-  const handleAdjustPoints = () => {
+  const handleAdjustPoints = async () => {
     const adjustment = parseInt(pointsAdjust);
-    if (isNaN(adjustment)) return;
+    if (isNaN(adjustment) || !selectedUserId) return;
     
-    addPoints(adjustment);
-    addLog(`Puntos ajustados: ${adjustment > 0 ? '+' : ''}${adjustment} (Total: ${userData.points + adjustment})`);
+    const success = await adminUpdatePoints(selectedUserId, adjustment);
+    if (success) {
+      addLog(`Puntos ajustados para usuario ${selectedUserId}: ${adjustment > 0 ? '+' : ''}${adjustment}`);
+      // Recargar usuarios para reflejar cambios
+      await loadUsers();
+    } else {
+      addLog(`Error al ajustar puntos para usuario ${selectedUserId}`);
+    }
     setPointsAdjust('');
   };
 
