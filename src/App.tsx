@@ -23,6 +23,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('=== APP: currentPage cambió a:', currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
     // Simulate initial loading
     const timer = setTimeout(() => {
       setIsLoading(false);

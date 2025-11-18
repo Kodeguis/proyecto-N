@@ -86,6 +86,17 @@ export const Birthday2025: React.FC = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<Memory | null>(null);
   const setCurrentPage = useStore((state) => state.setCurrentPage);
 
+  useEffect(() => {
+    console.log('=== BIRTHDAY2025: Componente montado ===');
+    console.log('setCurrentPage obtenido del store:', typeof setCurrentPage);
+    console.log('Función completa:', setCurrentPage);
+    
+    // Log del estado completo del store
+    const storeState = useStore.getState();
+    console.log('Estado completo del store:', storeState);
+    console.log('Funciones disponibles en store:', Object.keys(storeState));
+  }, []);
+
   const handleStart = () => {
     setCurrentStep(2);
   };
@@ -112,7 +123,16 @@ export const Birthday2025: React.FC = () => {
   };
 
   const handleGoBack = () => {
-    setCurrentPage('menu');
+    console.log('=== BIRTHDAY2025: handleGoBack llamado ===');
+    console.log('setCurrentPage disponible:', typeof setCurrentPage);
+    console.log('Antes de setCurrentPage - currentStep:', currentStep);
+    
+    try {
+      setCurrentPage('menu');
+      console.log('✅ setCurrentPage("menu") ejecutado exitosamente');
+    } catch (error) {
+      console.error('❌ Error en setCurrentPage:', error);
+    }
   };
 
   const handleBackToPanel2 = () => {
@@ -126,7 +146,10 @@ export const Birthday2025: React.FC = () => {
       {/* Navigation Buttons */}
       <div className="fixed top-4 left-4 z-50 flex gap-2">
         <RomanticButton
-          onClick={handleGoBack}
+          onClick={() => {
+            console.log('=== BOTÓN MENÚ PRINCIPAL CLICADO ===');
+            handleGoBack();
+          }}
           variant="secondary"
           size="sm"
           className="bg-white/90 backdrop-blur-sm border-2 border-white/30 shadow-lg hover:shadow-xl transition-all"

@@ -151,7 +151,12 @@ export const useStore = create<AppState>()(
       },
 
       // UI State
-      setCurrentPage: (page: string) => set({ currentPage: page }),
+      setCurrentPage: (page: string) => {
+        console.log('=== STORE: setCurrentPage llamado con:', page);
+        console.log('=== STORE: Estado actual antes:', get().currentPage);
+        set({ currentPage: page });
+        console.log('=== STORE: Estado después:', get().currentPage);
+      },
       setLoading: (loading: boolean) => set({ isLoading: loading }),
 
       // Admin
