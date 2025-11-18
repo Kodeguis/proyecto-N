@@ -128,16 +128,21 @@ export const Birthday2025: React.FC = () => {
     console.log('Antes de setCurrentPage - currentStep:', currentStep);
     
     try {
-      // Intentar múltiples métodos para asegurar que funcione
+      // Método principal: usar setCurrentPage directamente
       console.log('Intentando método 1: setCurrentPage directo');
       setCurrentPage('menu');
       
-      // También intentar con el store directo como respaldo
-      console.log('Intentando método 2: store directo');
-      const store = useStore.getState();
-      if (store && store.setCurrentPage) {
-        store.setCurrentPage('menu');
-      }
+      // Verificar que el cambio se aplicó
+      setTimeout(() => {
+        const store = useStore.getState();
+        console.log('Estado después de navegación:', store.currentPage);
+        
+        // Si no cambió, intentar método de respaldo
+        if (store.currentPage !== 'menu') {
+          console.log('⚠️ Navegación no funcionó, intentando método de respaldo');
+          store.setCurrentPage('menu');
+        }
+      }, 100);
       
       console.log('✅ setCurrentPage(\"menu\") ejecutado exitosamente');
     } catch (error) {

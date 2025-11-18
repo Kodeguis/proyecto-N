@@ -120,27 +120,6 @@ export const Menu = () => {
     setCurrentPage('admin-login');
   };
 
-  // Botón de prueba para debug
-  const handleTestClick = () => {
-    console.log('=== TEST BUTTON CLICKED ===');
-    console.log('Test button - current user:', currentUser);
-    console.log('Test button - userData before:', userData);
-    console.log('Test button - attempting to add 10 points');
-    
-    // Intentar sumar puntos
-    if (currentUser) {
-      console.log('Current user ID:', currentUser.id);
-      // Aquí deberías llamar a la función addPoints del store
-      // pero primero verifiquemos si está disponible
-      console.log('addPoints function available:', typeof useStore.getState().addPoints);
-    } else {
-      console.log('No current user found');
-    }
-    
-    console.log('Test button - attempting to set page to cumpleanos');
-    setCurrentPage('cumpleanos');
-  };
-
   return (
     <div className="min-h-screen bg-romantic-gradient bg-[length:400%_400%] animate-gradient-shift relative overflow-hidden">
       <AnimatedBackground />
