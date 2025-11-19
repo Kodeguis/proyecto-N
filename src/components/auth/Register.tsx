@@ -3,9 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, UserPlus } from 'lucide-react';
 import { FloatingHearts } from '../ui/FloatingHearts';
 import { RomanticButton } from '../ui/RomanticButton';
-import { useStore } from '../../stores/appStoreDB';
-import api from '../../lib/api';
-import { supabase } from '../../lib/supabase';
+import { useStore } from '../../stores/appStoreLocal';
 
 export const Register = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   const [username, setUsername] = useState('');
