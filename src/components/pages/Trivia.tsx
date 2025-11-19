@@ -134,10 +134,26 @@ export const Trivia: React.FC = () => {
     setShowExplanation(true);
     
     const currentQuestion = questions[currentQuestionIndex];
+    console.log('=== TRIVIA: RESPUESTA SELECCIONADA ===');
+    console.log('Índice de respuesta:', answerIndex);
+    console.log('Respuesta correcta:', currentQuestion.correct);
+    console.log('Puntos de la pregunta:', currentQuestion.points);
+    
     if (answerIndex === currentQuestion.correct) {
-      setScore(score + 1);
-      setTotalPoints(totalPoints + currentQuestion.points);
-      await addPoints(currentQuestion.points);
+      console.log('✅ RESPUESTA CORRECTA');
+      const newScore = score + 1;
+      const newTotalPoints = totalPoints + currentQuestion.points;
+      
+      setScore(newScore);
+      setTotalPoints(newTotalPoints);
+      console.log('Nuevo puntaje:', newScore);
+      console.log('Nuevos puntos totales:', newTotalPoints);
+      
+      console.log('Intentando añadir puntos...');
+      const success = await addPoints(currentQuestion.points);
+      console.log('Resultado de addPoints:', success ? 'EXITOSO' : 'FALLIDO');
+    } else {
+      console.log('❌ RESPUESTA INCORRECTA');
     }
     
     setTimeout(() => {

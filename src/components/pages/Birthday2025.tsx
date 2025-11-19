@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Heart, Sparkles } from 'lucide-react';
-import { useStore } from '../../stores/appStore';
+import { useStore } from '../../stores/appStoreDB';
 import { RomanticButton } from '../ui/RomanticButton';
 import { AnimatedBackground } from '../ui/AnimatedBackground';
 
@@ -86,6 +86,17 @@ export const Birthday2025: React.FC = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<Memory | null>(null);
   const setCurrentPage = useStore((state) => state.setCurrentPage);
 
+  useEffect(() => {
+    console.log('=== BIRTHDAY2025: Componente montado ===');
+    console.log('setCurrentPage obtenido del store:', typeof setCurrentPage);
+    console.log('Función completa:', setCurrentPage);
+    
+    // Log del estado completo del store
+    const storeState = useStore.getState();
+    console.log('Estado completo del store:', storeState);
+    console.log('Funciones disponibles en store:', Object.keys(storeState));
+  }, []);
+
   const handleStart = () => {
     setCurrentStep(2);
   };
@@ -112,7 +123,29 @@ export const Birthday2025: React.FC = () => {
   };
 
   const handleGoBack = () => {
-    setCurrentPage('menu');
+    console.log('=== BIRTHDAY2025: handleGoBack llamado ===');
+    console.log('setCurrentPage disponible:', typeof setCurrentPage);
+    console.log('Antes de setCurrentPage - currentStep:', currentStep);
+    
+    try {
+      // Método simple y directo - versión con manejo de errores
+      console.log('Intentando navegación directa a menu - versión con try-catch');
+      
+      if (typeof setCurrentPage === 'function') {
+        setCurrentPage('menu');
+        console.log('✅ Navegación ejecutada exitosamente');
+      } else {
+        console.error('❌ setCurrentPage no es una función');
+        // Fallback: intentar con window.location como último recurso
+        console.log('Intentando fallback con window.location');
+        window.location.hash = '#/menu';
+      }
+    } catch (error) {
+      console.error('❌ Error en navegación:', error);
+      // Fallback absoluto
+      console.log('Usando fallback absoluto');
+      window.location.hash = '#/menu';
+    }
   };
 
   const handleBackToPanel2 = () => {
@@ -123,12 +156,16 @@ export const Birthday2025: React.FC = () => {
     <div className="min-h-screen bg-romantic-gradient bg-[length:400%_400%] animate-gradient-shift relative overflow-hidden">
       <AnimatedBackground />
       
-      {/* Navigation Buttons */}
-      <div className="fixed top-4 left-4 z-50">
+      {/* Navigation Buttons - MOVIDO A LA DERECHA */}
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
         <RomanticButton
-          onClick={handleGoBack}
+          onClick={() => {
+            console.log('=== BOTÓN MENÚ PRINCIPAL CLICADO ===');
+            handleGoBack();
+          }}
           variant="secondary"
           size="sm"
+          className="bg-white/90 backdrop-blur-sm border-2 border-white/30 shadow-lg hover:shadow-xl transition-all hover:bg-white focus:bg-white active:bg-white relative"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Menú Principal

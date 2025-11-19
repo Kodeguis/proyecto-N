@@ -120,14 +120,6 @@ export const Menu = () => {
     setCurrentPage('admin-login');
   };
 
-  // Botón de prueba para debug
-  const handleTestClick = () => {
-    console.log('Test button - current user:', currentUser);
-    console.log('Test button - userData:', userData);
-    console.log('Test button - attempting to set page to cumpleanos');
-    setCurrentPage('cumpleanos');
-  };
-
   return (
     <div className="min-h-screen bg-romantic-gradient bg-[length:400%_400%] animate-gradient-shift relative overflow-hidden">
       <AnimatedBackground />
@@ -149,13 +141,6 @@ export const Menu = () => {
           </div>
           
           <div className="flex gap-3">
-            <RomanticButton
-              onClick={handleTestClick}
-              variant="secondary"
-              size="sm"
-            >
-              🧪
-            </RomanticButton>
             <RomanticButton
               onClick={handleAdminClick}
               variant="secondary"

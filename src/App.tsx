@@ -12,7 +12,6 @@ import { Trivia } from './components/pages/Trivia';
 import { Coupons } from './components/pages/Coupons';
 import { TriviaAdmin } from './components/admin/TriviaAdmin';
 import { DailyMessagesAdmin } from './components/admin/DailyMessagesAdmin';
-import { DebugPanel } from './components/ui/DebugPanel';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -21,6 +20,10 @@ function App() {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
   const isAdmin = useStore((state) => state.isAdmin);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    console.log('=== APP: currentPage cambió a:', currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     // Simulate initial loading
@@ -92,7 +95,6 @@ function App() {
           {renderCurrentPage()}
         </motion.div>
       </AnimatePresence>
-      <DebugPanel />
     </div>
   );
 }

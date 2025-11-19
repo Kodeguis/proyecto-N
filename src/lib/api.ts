@@ -87,24 +87,76 @@ export const authAPI = {
     }
 
     return data;
+  },
+
+  async getAllUsers(): Promise<User[]> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo usuarios:', error);
+      return [];
+    }
+
+    return data || [];
+  },
+
+  async getAllUsersWithPoints(): Promise<any[]> {
+    const { data, error } = await supabase
+      .rpc('get_all_users_with_points');
+
+    if (error) {
+      console.error('Error obteniendo usuarios con puntos:', error);
+      return [];
+    }
+
+    return data || [];
   }
 };
 
 // Funciones de puntos
 export const pointsAPI = {
+  async getAllUserPoints(): Promise<Array<User & { user_points: UserPoints | null }>> {
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        user_points!inner(*)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo puntos de usuarios:', error);
+      return [];
+    }
+
+    return data || [];
+  },
+
   async getUserPoints(userId: string): Promise<UserPoints | null> {
+    console.log('=== GET USER POINTS ===');
+    console.log('User ID:', userId);
+    
     const { data, error } = await supabase
       .from('user_points')
       .select('*')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
     if (error) {
-      console.error('Error obteniendo puntos:', error);
+      console.error('❌ Error obteniendo puntos:', error);
       return null;
     }
 
-    return data;
+    // Handle empty results - return null if no data found
+    if (!data || data.length === 0) {
+      console.log('ℹ️ No se encontraron puntos para este usuario');
+      return null;
+    }
+
+    console.log('✅ Puntos encontrados:', data[0]);
+    return data[0];
   },
 
   async createUserPoints(userId: string): Promise<UserPoints | null> {
@@ -127,15 +179,25 @@ export const pointsAPI = {
   },
 
   async updatePoints(userId: string, points: number): Promise<boolean> {
+    console.log('=== API UPDATE POINTS INICIADO ===');
+    console.log('User ID:', userId);
+    console.log('Puntos a añadir:', points);
+    
     // Primero obtener los puntos actuales
     const currentPoints = await this.getUserPoints(userId);
+    console.log('Puntos actuales:', currentPoints);
     
     if (!currentPoints) {
+      console.log('❌ No se encontraron puntos actuales');
       return false;
     }
 
     const newTotal = currentPoints.total_points_earned + points;
     const newPoints = currentPoints.points + points;
+    
+    console.log('Cálculos:');
+    console.log('Nuevos puntos totales:', newPoints);
+    console.log('Nuevo total ganado:', newTotal);
 
     const { error } = await supabase
       .from('user_points')
@@ -147,11 +209,27 @@ export const pointsAPI = {
       .eq('user_id', userId);
 
     if (error) {
-      console.error('Error actualizando puntos:', error);
+      console.error('❌ Error actualizando puntos:', error);
       return false;
     }
 
+    console.log('✅ Puntos actualizados exitosamente');
     return true;
+  },
+
+  async adminUpdatePoints(userId: string, pointsToAdd: number): Promise<boolean> {
+    const { data, error } = await supabase
+      .rpc('admin_update_user_points', {
+        target_user_id: userId,
+        points_to_add: pointsToAdd
+      });
+
+    if (error) {
+      console.error('Error actualizando puntos como admin:', error);
+      return false;
+    }
+
+    return data || false;
   },
 
   async spendPoints(userId: string, points: number): Promise<boolean> {
@@ -199,6 +277,25 @@ export const dailyMessagesAPI = {
   },
 
   async openDay(userId: string, dayNumber: number): Promise<boolean> {
+    console.log('=== OPEN DAY INICIADO ===');
+    console.log('User ID:', userId);
+    console.log('Day Number:', dayNumber);
+    
+    // First check if the day is already opened
+    const { data: existingDay } = await supabase
+      .from('user_daily_messages')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('day_number', dayNumber)
+      .single();
+    
+    if (existingDay) {
+      console.log('✅ El día ya estaba abierto, no es necesario insertar');
+      return true; // Day already opened, consider it successful
+    }
+    
+    console.log('ℹ️ El día no está abierto, procediendo con inserción...');
+    
     const { error } = await supabase
       .from('user_daily_messages')
       .insert([{
@@ -207,10 +304,11 @@ export const dailyMessagesAPI = {
       }]);
 
     if (error) {
-      console.error('Error abriendo día:', error);
+      console.error('❌ Error abriendo día:', error);
       return false;
     }
 
+    console.log('✅ Día abierto exitosamente');
     return true;
   }
 };

@@ -52,6 +52,9 @@ export interface AppState {
   // Database sync
   syncUserData: () => Promise<void>;
   initializeUser: (userId: string) => Promise<void>;
+  
+  // Admin functions
+  adminUpdatePoints: (userId: string, points: number) => Promise<boolean>;
 }
 
 const initialUserData: UserData = {
@@ -151,7 +154,12 @@ export const useStore = create<AppState>()(
       },
 
       // UI State
-      setCurrentPage: (page: string) => set({ currentPage: page }),
+      setCurrentPage: (page: string) => {
+        console.log('=== STORE: setCurrentPage llamado con:', page);
+        console.log('=== STORE: Estado actual antes:', get().currentPage);
+        set({ currentPage: page });
+        console.log('=== STORE: Estado después:', get().currentPage);
+      },
       setLoading: (loading: boolean) => set({ isLoading: loading }),
 
       // Admin
@@ -179,14 +187,41 @@ export const useStore = create<AppState>()(
         const state = get();
         if (!state.currentUser) return false;
         
+        console.log('=== ADDPOINTS INICIADO ===');
+        console.log('Usuario actual:', state.currentUser.id);
+        console.log('Puntos a añadir:', points);
+        
         try {
+          // Primero actualizar en base de datos
           const success = await api.pointsAPI.updatePoints(state.currentUser.id, points);
+          console.log('Actualización en base de datos:', success ? 'EXITOSA' : 'FALLIDA');
+          
           if (success) {
+            // Si la BD actualizó correctamente, actualizar estado local
+            const currentPoints = state.userData.points;
+            const newPoints = currentPoints + points;
+            console.log('Actualizando estado local - Puntos actuales:', currentPoints, 'Nuevos puntos:', newPoints);
+            
+            set((state) => ({
+              userData: {
+                ...state.userData,
+                points: newPoints,
+                totalPointsEarned: state.userData.totalPointsEarned + Math.max(points, 0)
+              }
+            }));
+            
+            console.log('✅ Estado local actualizado');
+            
+            // Sincronizar con base de datos para asegurar consistencia
             await state.syncUserData();
+            console.log('✅ Sincronización completada');
+          } else {
+            console.log('❌ No se actualizó el estado local porque falló la BD');
           }
+          
           return success;
         } catch (error) {
-          console.error('Error agregando puntos:', error);
+          console.error('❌ Error agregando puntos:', error);
           return false;
         }
       },
@@ -240,13 +275,27 @@ export const useStore = create<AppState>()(
       // Database sync
       syncUserData: async () => {
         const state = get();
-        if (!state.currentUser) return;
+        if (!state.currentUser) {
+          console.log('❌ syncUserData: No hay usuario actual');
+          return;
+        }
+        
+        console.log('=== SYNC USER DATA INICIADO ===');
+        console.log('Usuario actual:', state.currentUser.id);
         
         try {
+          console.log('Obteniendo datos de base de datos...');
           const userPoints = await api.pointsAPI.getUserPoints(state.currentUser.id);
+          console.log('Puntos obtenidos:', userPoints);
+          
           const openedDays = await api.dailyMessagesAPI.getOpenedDays(state.currentUser.id);
+          console.log('Días abiertos:', openedDays);
+          
           const usedCoupons = await api.couponsAPI.getUsedCoupons(state.currentUser.id);
+          console.log('Cupones usados:', usedCoupons);
+          
           const answeredQuestions = await api.triviaAPI.getAnsweredQuestions(state.currentUser.id);
+          console.log('Preguntas respondidas:', answeredQuestions);
           
           const userData: UserData = {
             points: userPoints?.points || 0,
@@ -254,13 +303,15 @@ export const useStore = create<AppState>()(
             unlockedCoupons: [],
             usedCoupons: usedCoupons,
             openedDays: openedDays,
-            triviaScore: answeredQuestions.filter(q => q.isCorrect).length * 10,
+            triviaScore: answeredQuestions.filter(q => q.isCorrect).length,
             triviaCompleted: answeredQuestions.map(q => q.questionId),
           };
-
+          
+          console.log('Nuevos datos de usuario:', userData);
           set({ userData });
+          console.log('✅ Sincronización completada');
         } catch (error) {
-          console.error('Error sincronizando datos:', error);
+          console.error('❌ Error sincronizando datos:', error);
         }
       },
 
@@ -273,6 +324,47 @@ export const useStore = create<AppState>()(
           }
         } catch (error) {
           console.error('Error inicializando usuario:', error);
+        }
+      },
+
+      // Función especial para admin - puede actualizar puntos de cualquier usuario
+      adminUpdatePoints: async (userId: string, points: number) => {
+        console.log('=== ADMIN UPDATE POINTS INICIADO ===');
+        console.log('Usuario objetivo:', userId);
+        console.log('Puntos a añadir:', points);
+        
+        try {
+          const success = await api.pointsAPI.updatePoints(userId, points);
+          console.log('Actualización en base de datos:', success ? 'EXITOSA' : 'FALLIDA');
+          
+          // Si el admin está actualizando su propio usuario, actualizar estado local
+          const state = get();
+          if (success && state.currentUser && state.currentUser.id === userId) {
+            console.log('El admin está actualizando sus propios puntos - actualizando estado local');
+            
+            // Actualizar estado local inmediatamente
+            const currentPoints = state.userData.points;
+            const newPoints = currentPoints + points;
+            
+            set((state) => ({
+              userData: {
+                ...state.userData,
+                points: newPoints,
+                totalPointsEarned: state.userData.totalPointsEarned + Math.max(points, 0)
+              }
+            }));
+            
+            console.log('Estado local actualizado para el admin:', newPoints);
+          } else if (success) {
+            // Si el admin actualizó otro usuario, también sincronizar para asegurar consistencia
+            console.log('Admin actualizó otro usuario, sincronizando datos...');
+            await state.syncUserData();
+          }
+          
+          return success;
+        } catch (error) {
+          console.error('❌ Error actualizando puntos como admin:', error);
+          return false;
         }
       },
 
