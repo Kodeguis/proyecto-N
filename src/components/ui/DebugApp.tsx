@@ -1,10 +1,36 @@
 import { useEffect, useState } from 'react';
 
+interface DebugInfo {
+  timestamp: string;
+  userAgent: string;
+  url: string;
+  env: Record<string, any>;
+  localStorage: {
+    length: number;
+    keys: string[];
+  };
+  errors: Array<{
+    type: string;
+    message?: string;
+    filename?: string;
+    lineno?: number;
+    colno?: number;
+    reason?: string;
+  }>;
+}
+
 export const DebugApp = () => {
-  const [debugInfo, setDebugInfo] = useState<any>({});
+  const [debugInfo, setDebugInfo] = useState<DebugInfo>({
+    timestamp: '',
+    userAgent: '',
+    url: '',
+    env: {},
+    localStorage: { length: 0, keys: [] },
+    errors: []
+  });
 
   useEffect(() => {
-    const info = {
+    const info: DebugInfo = {
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       url: window.location.href,
@@ -24,22 +50,26 @@ export const DebugApp = () => {
 
     // Capturar errores globales
     window.addEventListener('error', (event) => {
-      info.errors.push({
-        type: 'error',
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno
-      });
-      setDebugInfo({...info});
+      setDebugInfo(prev => ({
+        ...prev,
+        errors: [...prev.errors, {
+          type: 'error',
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno
+        }]
+      }));
     });
 
     window.addEventListener('unhandledrejection', (event) => {
-      info.errors.push({
-        type: 'unhandledrejection',
-        reason: event.reason?.toString() || 'Unknown'
-      });
-      setDebugInfo({...info});
+      setDebugInfo(prev => ({
+        ...prev,
+        errors: [...prev.errors, {
+          type: 'unhandledrejection',
+          reason: event.reason?.toString() || 'Unknown'
+        }]
+      }));
     });
 
     setDebugInfo(info);
