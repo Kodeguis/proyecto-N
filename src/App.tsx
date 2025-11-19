@@ -5,13 +5,14 @@ import { Register } from './components/auth/Register';
 import { AdminLogin } from './components/auth/AdminLogin';
 import { Menu } from './components/pages/Menu';
 import { AdminPanel } from './components/pages/AdminPanel';
-import { LoadingScreen } from './components/ui/LoadingScreen';
+import { SimpleLoadingScreen } from './components/ui/SimpleLoadingScreen';
 import { Birthday2025 } from './components/pages/Birthday2025';
 import { DailyMessages } from './components/pages/DailyMessages';
 import { Trivia } from './components/pages/Trivia';
 import { Coupons } from './components/pages/Coupons';
 import { TriviaAdmin } from './components/admin/TriviaAdmin';
 import { DailyMessagesAdmin } from './components/admin/DailyMessagesAdmin';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -21,13 +22,17 @@ function App() {
   const isAdmin = useStore((state) => state.isAdmin);
   const [isLoading, setIsLoading] = useState(true);
 
+  console.log('=== APP: Estado inicial:', { currentPage, isAuthenticated, isAdmin });
+
   useEffect(() => {
     console.log('=== APP: currentPage cambió a:', currentPage);
   }, [currentPage]);
 
   useEffect(() => {
+    console.log('=== APP: Iniciando carga...');
     // Simulate initial loading
     const timer = setTimeout(() => {
+      console.log('=== APP: Finalizando carga');
       setIsLoading(false);
     }, 1500);
 
@@ -35,7 +40,7 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <SimpleLoadingScreen />;
   }
 
   const renderCurrentPage = () => {
@@ -81,21 +86,23 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentPage}
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={pageTransition}
-          className="min-h-screen"
-        >
-          {renderCurrentPage()}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
+            className="min-h-screen"
+          >
+            {renderCurrentPage()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </ErrorBoundary>
   );
 }
 
