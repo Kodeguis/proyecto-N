@@ -250,8 +250,14 @@ export const DailyMessages: React.FC = () => {
   };
 
   const closeMessage = () => {
+    console.log('=== CERRANDO MENSAJE ===');
+    console.log('showMessage antes:', showMessage);
+    console.log('selectedDay antes:', selectedDay);
+    
     setShowMessage(false);
     setSelectedDay(null);
+    
+    console.log('Mensaje cerrado exitosamente');
   };
 
   const selectedMessage = messages.find(m => m.day === selectedDay);
@@ -328,7 +334,10 @@ export const DailyMessages: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={closeMessage}
+            onClick={(e) => {
+              console.log('Click en overlay - cerrando mensaje');
+              closeMessage();
+            }}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -336,7 +345,10 @@ export const DailyMessages: React.FC = () => {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", stiffness: 200 }}
               className="bg-white rounded-3xl p-8 max-w-md w-full shadow-romantic"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                console.log('Click en contenido - no cerrar');
+                e.stopPropagation();
+              }}
             >
               <div className="text-center">
                 <div className="flex items-center justify-center mb-4">

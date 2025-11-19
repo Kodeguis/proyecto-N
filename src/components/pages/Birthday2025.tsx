@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Heart, Sparkles } from 'lucide-react';
-import { useStore } from '../../stores/appStore';
+import { useStore } from '../../stores/appStoreDB';
 import { RomanticButton } from '../ui/RomanticButton';
 import { AnimatedBackground } from '../ui/AnimatedBackground';
 
@@ -127,12 +127,25 @@ export const Birthday2025: React.FC = () => {
     console.log('setCurrentPage disponible:', typeof setCurrentPage);
     console.log('Antes de setCurrentPage - currentStep:', currentStep);
     
-    // Método simple y directo - versión actualizada
-    console.log('Intentando navegación directa a menu - versión actualizada');
-    setCurrentPage('menu');
-    
-    // Verificación inmediata
-    console.log('Navegación ejecutada - nueva versión');
+    try {
+      // Método simple y directo - versión con manejo de errores
+      console.log('Intentando navegación directa a menu - versión con try-catch');
+      
+      if (typeof setCurrentPage === 'function') {
+        setCurrentPage('menu');
+        console.log('✅ Navegación ejecutada exitosamente');
+      } else {
+        console.error('❌ setCurrentPage no es una función');
+        // Fallback: intentar con window.location como último recurso
+        console.log('Intentando fallback con window.location');
+        window.location.hash = '#/menu';
+      }
+    } catch (error) {
+      console.error('❌ Error en navegación:', error);
+      // Fallback absoluto
+      console.log('Usando fallback absoluto');
+      window.location.hash = '#/menu';
+    }
   };
 
   const handleBackToPanel2 = () => {
@@ -152,7 +165,7 @@ export const Birthday2025: React.FC = () => {
           }}
           variant="secondary"
           size="sm"
-          className="bg-white/90 backdrop-blur-sm border-2 border-white/30 shadow-lg hover:shadow-xl transition-all"
+          className="bg-white/90 backdrop-blur-sm border-2 border-white/30 shadow-lg hover:shadow-xl transition-all hover:bg-white focus:bg-white active:bg-white relative"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Menú Principal

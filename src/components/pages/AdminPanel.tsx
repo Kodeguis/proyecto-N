@@ -56,29 +56,120 @@ export const AdminPanel = () => {
   };
 
   const handleAdjustPoints = async () => {
+    console.log('=== HANDLE ADJUST POINTS INICIADO ===');
+    console.log('pointsAdjust actual:', pointsAdjust);
+    console.log('selectedUserId actual:', selectedUserId);
+    console.log('Usuarios disponibles:', users);
+    
     const adjustment = parseInt(pointsAdjust);
-    if (isNaN(adjustment) || !selectedUserId) return;
+    console.log('Ajuste parseado:', adjustment);
+    console.log('isNaN(adjustment):', isNaN(adjustment));
+    console.log('!selectedUserId:', !selectedUserId);
+    
+    if (isNaN(adjustment) || !selectedUserId) {
+      console.log('❌ Validación fallida - mostrando mensaje de error');
+      addLog('❌ Por favor selecciona un usuario y una cantidad válida');
+      return;
+    }
+    
+    console.log('✅ Validación exitosa, procediendo con actualización...');
+    console.log('Usuario seleccionado:', selectedUserId);
+    console.log('Ajuste:', adjustment);
     
     const success = await adminUpdatePoints(selectedUserId, adjustment);
+    console.log('Resultado de adminUpdatePoints:', success);
+    
     if (success) {
-      addLog(`Puntos ajustados para usuario ${selectedUserId}: ${adjustment > 0 ? '+' : ''}${adjustment}`);
+      const userName = users.find(u => u.id === selectedUserId)?.username || 'Usuario';
+      console.log(`✅ Actualización exitosa para ${userName}`);
+      addLog(`Puntos ajustados para ${userName}: ${adjustment > 0 ? '+' : ''}${adjustment}`);
       // Recargar usuarios para reflejar cambios
       await loadUsers();
+      addLog('✅ Lista de usuarios actualizada');
+      
+      // Si el admin está actualizando su propio usuario, sincronizar datos para reflejar cambios en el menú
+      const currentUser = useStore.getState().currentUser;
+      if (currentUser && currentUser.id === selectedUserId) {
+        console.log('El admin actualizó sus propios puntos, sincronizando...');
+        await useStore.getState().syncUserData();
+        addLog('✅ Datos personales sincronizados');
+      }
     } else {
-      addLog(`Error al ajustar puntos para usuario ${selectedUserId}`);
+      const userName = users.find(u => u.id === selectedUserId)?.username || 'Usuario';
+      console.log(`❌ Error al actualizar puntos para ${userName}`);
+      addLog(`❌ Error al ajustar puntos para ${userName}`);
     }
     setPointsAdjust('');
   };
 
-  const handleResetPoints = () => {
-    if (!confirm('¿Resetear puntos a 0?')) return;
-    setUserData({ points: 0 });
-    addLog('Puntos reseteados a 0');
+  const handleResetPoints = async () => {
+    console.log('=== HANDLE RESET POINTS INICIADO ===');
+    console.log('selectedUserId:', selectedUserId);
+    console.log('users array:', users);
+    
+    if (!selectedUserId) {
+      addLog('❌ Debes seleccionar un usuario primero');
+      return;
+    }
+    
+    const selectedUser = users.find(u => u.id === selectedUserId);
+    console.log('Usuario encontrado:', selectedUser);
+    
+    if (!selectedUser) {
+      console.log('❌ Usuario no encontrado en el array');
+      addLog('❌ Usuario no encontrado');
+      return;
+    }
+    
+    const currentPoints = selectedUser.points || 0;
+    const pointsToSubtract = -currentPoints;
+    
+    console.log(`Puntos actuales de ${selectedUser.username}:`, currentPoints);
+    console.log('Puntos a restar:', pointsToSubtract);
+    
+    if (!confirm(`¿Resetear puntos a 0 para ${selectedUser.username}?`)) return;
+    
+    console.log('Confirmación aceptada, procediendo con actualización...');
+    const success = await adminUpdatePoints(selectedUserId, pointsToSubtract);
+    console.log('Resultado de reset:', success);
+    
+    if (success) {
+      addLog(`✅ Puntos reseteados a 0 para ${selectedUser.username}`);
+      await loadUsers();
+    } else {
+      addLog(`❌ Error al resetear puntos para ${selectedUser.username}`);
+    }
   };
 
-  const handleGiveBonus = () => {
-    addPoints(50);
-    addLog('Bonus de +50 puntos otorgado');
+  const handleGiveBonus = async () => {
+    console.log('=== HANDLE GIVE BONUS INICIADO ===');
+    console.log('selectedUserId:', selectedUserId);
+    console.log('users array:', users);
+    
+    if (!selectedUserId) {
+      addLog('❌ Debes seleccionar un usuario primero');
+      return;
+    }
+    
+    const selectedUser = users.find(u => u.id === selectedUserId);
+    console.log('Usuario encontrado:', selectedUser);
+    
+    if (!selectedUser) {
+      console.log('❌ Usuario no encontrado en el array');
+      addLog('❌ Usuario no encontrado');
+      return;
+    }
+    
+    console.log(`Dando bonus de +50 a ${selectedUser.username}...`);
+    const success = await adminUpdatePoints(selectedUserId, 50);
+    console.log('Resultado del bonus:', success);
+    
+    if (success) {
+      addLog(`✅ Bonus de +50 puntos otorgado a ${selectedUser.username}`);
+      await loadUsers();
+    } else {
+      addLog(`❌ Error al dar bonus a ${selectedUser.username}`);
+    }
   };
 
   const handleResetAllCoupons = () => {
@@ -115,7 +206,11 @@ export const AdminPanel = () => {
   };
 
   const goBack = () => {
+    console.log('=== ADMIN PANEL: Intentando volver al menú ===');
+    console.log('setCurrentPage disponible:', typeof setCurrentPage);
+    console.log('Antes de setCurrentPage');
     setCurrentPage('menu');
+    console.log('Después de setCurrentPage - navegación ejecutada');
   };
 
   return (
@@ -192,6 +287,153 @@ export const AdminPanel = () => {
             <TrendingUp className="w-5 h-5" />
             Gestión de Puntos
           </h2>
+          
+          {/* User Selection */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Seleccionar Usuario:
+              </label>
+              <RomanticButton 
+                onClick={loadUsers} 
+                size="sm" 
+                variant="secondary"
+                className="text-xs"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Actualizar
+              </RomanticButton>
+            </div>
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">-- Selecciona un usuario --</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username} - {user.points} puntos
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Current User Stats */}
+          {selectedUserId && (
+            <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+              {(() => {
+                const selectedUser = users.find(u => u.id === selectedUserId);
+                if (!selectedUser) {
+                  return <div className="text-sm text-red-600">❌ Usuario no encontrado</div>;
+                }
+                return (
+                  <>
+                    <div className="text-sm text-gray-600 mb-2">
+                      <strong>Usuario seleccionado:</strong> {selectedUser.username}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="text-gray-600">
+                        <strong>Puntos actuales:</strong> {selectedUser.points || 0}
+                      </div>
+                      <div className="text-gray-600">
+                        <strong>Total ganado:</strong> {selectedUser.total_points_earned || 0}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+              
+              {/* Quick Actions for Selected User */}
+              <div className="mt-3 pt-3 border-t border-purple-200">
+                <div className="text-xs text-gray-500 mb-2">Acciones rápidas:</div>
+                <div className="flex gap-1">
+                  <RomanticButton 
+                    onClick={async () => {
+                      console.log('=== QUICK ACTION +10 ===');
+                      console.log('selectedUserId:', selectedUserId);
+                      if (!selectedUserId) {
+                        addLog('❌ Debes seleccionar un usuario primero');
+                        return;
+                      }
+                      const selectedUser = users.find(u => u.id === selectedUserId);
+                      if (!selectedUser) {
+                        addLog('❌ Usuario no encontrado');
+                        return;
+                      }
+                      console.log(`Dando +10 puntos a ${selectedUser.username}...`);
+                      const success = await adminUpdatePoints(selectedUserId, 10);
+                      if (success) {
+                        addLog(`✅ +10 puntos rápidos a ${selectedUser.username}`);
+                        await loadUsers();
+                      } else {
+                        addLog(`❌ Error al dar +10 puntos a ${selectedUser.username}`);
+                      }
+                    }} 
+                    size="sm" 
+                    variant="success"
+                    className="text-xs px-2 py-1"
+                  >
+                    +10
+                  </RomanticButton>
+                  <RomanticButton 
+                    onClick={async () => {
+                      console.log('=== QUICK ACTION +25 ===');
+                      if (!selectedUserId) {
+                        addLog('❌ Debes seleccionar un usuario primero');
+                        return;
+                      }
+                      const selectedUser = users.find(u => u.id === selectedUserId);
+                      if (!selectedUser) {
+                        addLog('❌ Usuario no encontrado');
+                        return;
+                      }
+                      console.log(`Dando +25 puntos a ${selectedUser.username}...`);
+                      const success = await adminUpdatePoints(selectedUserId, 25);
+                      if (success) {
+                        addLog(`✅ +25 puntos rápidos a ${selectedUser.username}`);
+                        await loadUsers();
+                      } else {
+                        addLog(`❌ Error al dar +25 puntos a ${selectedUser.username}`);
+                      }
+                    }} 
+                    size="sm" 
+                    variant="success"
+                    className="text-xs px-2 py-1"
+                  >
+                    +25
+                  </RomanticButton>
+                  <RomanticButton 
+                    onClick={async () => {
+                      console.log('=== QUICK ACTION -5 ===');
+                      if (!selectedUserId) {
+                        addLog('❌ Debes seleccionar un usuario primero');
+                        return;
+                      }
+                      const selectedUser = users.find(u => u.id === selectedUserId);
+                      if (!selectedUser) {
+                        addLog('❌ Usuario no encontrado');
+                        return;
+                      }
+                      console.log(`Restando -5 puntos a ${selectedUser.username}...`);
+                      const success = await adminUpdatePoints(selectedUserId, -5);
+                      if (success) {
+                        addLog(`✅ -5 puntos a ${selectedUser.username}`);
+                        await loadUsers();
+                      } else {
+                        addLog(`❌ Error al restar -5 puntos a ${selectedUser.username}`);
+                      }
+                    }} 
+                    size="sm" 
+                    variant="warning"
+                    className="text-xs px-2 py-1"
+                  >
+                    -5
+                  </RomanticButton>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
