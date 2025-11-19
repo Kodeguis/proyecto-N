@@ -43,50 +43,45 @@ export interface UserTriviaAnswer {
 // Funciones de autenticación
 export const authAPI = {
   async login(username: string, password: string): Promise<User | null> {
-    // Verificar si el usuario existe
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('username', username)
-      .single();
+    try {
+      // Usar la función de PostgreSQL para login
+      const { data, error } = await supabase
+        .rpc('login_user', {
+          p_username: username,
+          p_password: password
+        });
 
-    if (error || !data) {
+      if (error || !data || data.length === 0) {
+        console.error('Error en login:', error);
+        return null;
+      }
+
+      return data[0];
+    } catch (error) {
       console.error('Error en login:', error);
       return null;
     }
-
-    // En producción, deberías verificar el hash de la contraseña
-    // Por ahora, haremos una comparación simple (NO recomendado para producción)
-    if (data.password_hash === password) {
-      return data;
-    }
-
-    return null;
   },
 
   async register(username: string, password: string): Promise<User | null> {
-    // Crear nuevo usuario
-    const { data, error } = await supabase
-      .from('users')
-      .insert([{
-        username,
-        password_hash: password, // En producción usa bcrypt o similar
-        is_admin: false
-      }])
-      .select()
-      .single();
+    try {
+      // Usar la función de PostgreSQL para registro
+      const { data, error } = await supabase
+        .rpc('register_user', {
+          p_username: username,
+          p_password: password
+        });
 
-    if (error) {
+      if (error || !data || data.length === 0) {
+        console.error('Error en registro:', error);
+        return null;
+      }
+
+      return data[0];
+    } catch (error) {
       console.error('Error en registro:', error);
       return null;
     }
-
-    // Crear registro de puntos para el nuevo usuario
-    if (data) {
-      await pointsAPI.createUserPoints(data.id);
-    }
-
-    return data;
   },
 
   async getAllUsers(): Promise<User[]> {
@@ -139,24 +134,24 @@ export const pointsAPI = {
     console.log('=== GET USER POINTS ===');
     console.log('User ID:', userId);
     
-    const { data, error } = await supabase
-      .from('user_points')
-      .select('*')
-      .eq('user_id', userId);
+    try {
+      // Usar la función de PostgreSQL para obtener puntos
+      const { data, error } = await supabase
+        .rpc('get_or_create_user_points', {
+          p_user_id: userId
+        });
 
-    if (error) {
+      if (error || !data || data.length === 0) {
+        console.error('❌ Error obteniendo puntos:', error);
+        return null;
+      }
+
+      console.log('✅ Puntos encontrados:', data[0]);
+      return data[0];
+    } catch (error) {
       console.error('❌ Error obteniendo puntos:', error);
       return null;
     }
-
-    // Handle empty results - return null if no data found
-    if (!data || data.length === 0) {
-      console.log('ℹ️ No se encontraron puntos para este usuario');
-      return null;
-    }
-
-    console.log('✅ Puntos encontrados:', data[0]);
-    return data[0];
   },
 
   async createUserPoints(userId: string): Promise<UserPoints | null> {
@@ -183,38 +178,26 @@ export const pointsAPI = {
     console.log('User ID:', userId);
     console.log('Puntos a añadir:', points);
     
-    // Primero obtener los puntos actuales
-    const currentPoints = await this.getUserPoints(userId);
-    console.log('Puntos actuales:', currentPoints);
-    
-    if (!currentPoints) {
-      console.log('❌ No se encontraron puntos actuales');
-      return false;
-    }
+    try {
+      // Usar la función de PostgreSQL para actualizar puntos
+      const { data, error } = await supabase
+        .rpc('update_user_points', {
+          p_user_id: userId,
+          p_points_to_add: points,
+          p_source: 'trivia'
+        });
 
-    const newTotal = currentPoints.total_points_earned + points;
-    const newPoints = currentPoints.points + points;
-    
-    console.log('Cálculos:');
-    console.log('Nuevos puntos totales:', newPoints);
-    console.log('Nuevo total ganado:', newTotal);
+      if (error) {
+        console.error('❌ Error actualizando puntos:', error);
+        return false;
+      }
 
-    const { error } = await supabase
-      .from('user_points')
-      .update({
-        points: newPoints,
-        total_points_earned: newTotal,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', userId);
-
-    if (error) {
+      console.log('✅ Puntos actualizados exitosamente');
+      return true;
+    } catch (error) {
       console.error('❌ Error actualizando puntos:', error);
       return false;
     }
-
-    console.log('✅ Puntos actualizados exitosamente');
-    return true;
   },
 
   async adminUpdatePoints(userId: string, pointsToAdd: number): Promise<boolean> {

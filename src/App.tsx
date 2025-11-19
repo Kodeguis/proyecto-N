@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from './stores/appStoreLocal';
+import { useStore } from './stores/appStoreDB';
 import { Login } from './components/auth/Login';
 import { Register } from './components/auth/Register';
 import { AdminLogin } from './components/auth/AdminLogin';
@@ -13,7 +13,6 @@ import { Coupons } from './components/pages/Coupons';
 import { TriviaAdmin } from './components/admin/TriviaAdmin';
 import { DailyMessagesAdmin } from './components/admin/DailyMessagesAdmin';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
-import { LocalModeInfo } from './components/ui/LocalModeInfo';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -88,7 +87,6 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <LocalModeInfo />
       <div className="min-h-screen bg-gray-50">
         <AnimatePresence mode="wait">
           <motion.div

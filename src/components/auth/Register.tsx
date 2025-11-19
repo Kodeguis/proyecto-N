@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, UserPlus } from 'lucide-react';
 import { FloatingHearts } from '../ui/FloatingHearts';
 import { RomanticButton } from '../ui/RomanticButton';
-import { useStore } from '../../stores/appStoreLocal';
+import { useStore } from '../../stores/appStoreDB';
 
 export const Register = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   const [username, setUsername] = useState('');
@@ -12,6 +12,8 @@ export const Register = ({ setCurrentPage }: { setCurrentPage: (page: string) =>
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const register = useStore((state) => state.register);
 
   const handleRegister = async () => {
     if (!username.trim() || !password.trim()) {
@@ -33,29 +35,16 @@ export const Register = ({ setCurrentPage }: { setCurrentPage: (page: string) =>
     setError('');
 
     try {
-      // Verificar si el usuario ya existe
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('username', username)
-        .single();
-
-      if (existingUser) {
-        setError('Este usuario ya existe');
-        setIsLoading(false);
-        return;
-      }
-
-      // Crear nuevo usuario
-      const newUser = await api.authAPI.register(username, password);
+      // Crear nuevo usuario usando el store
+      const success = await register(username, password);
       
-      if (newUser) {
+      if (success) {
         setIsSuccess(true);
         setTimeout(() => {
           setCurrentPage('login');
         }, 2000);
       } else {
-        setError('Error al crear el usuario');
+        setError('Error al crear el usuario. El nombre de usuario puede estar en uso.');
       }
     } catch (error) {
       console.error('Error en registro:', error);

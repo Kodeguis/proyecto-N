@@ -191,6 +191,15 @@ export const useStore = create<AppState>()(
         return false;
       },
 
+      // UI State
+      setCurrentPage: (page: string) => {
+        set({ currentPage: page });
+      },
+
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading });
+      },
+
       // User data
       setUserData: (data: Partial<UserData>) => {
         set((state) => ({

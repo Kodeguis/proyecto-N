@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, UserPlus } from 'lucide-react';
 import { FloatingHearts } from '../ui/FloatingHearts';
 import { RomanticButton } from '../ui/RomanticButton';
-import { useStore } from '../../stores/appStoreLocal';
+import { useStore } from '../../stores/appStoreDB';
 
 export const Login = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   const [username, setUsername] = useState('');
@@ -166,10 +166,6 @@ export const Login = ({ setCurrentPage }: { setCurrentPage: (page: string) => vo
             transition={{ delay: 0.8, duration: 0.6 }}
             className="mt-8 pt-6 border-t border-gray-200 space-y-2"
           >
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
-              <p className="font-semibold mb-1">🚀 Credenciales temporales:</p>
-              <p>Usuario: <strong>nico</strong> | Contraseña: <strong>nico123</strong></p>
-            </div>
             <p className="text-xs text-gray-500">
               💡 Tip: Presiona Enter para ingresar más rápido
             </p>
